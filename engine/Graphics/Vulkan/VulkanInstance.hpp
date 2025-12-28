@@ -25,6 +25,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
+#ifdef NDEBUG
+    const bool enableValidationLayers = true;
+#else
+    const bool enableValidationLayers = false;
+#endif
+
+
 #include <vector>
 #include <string>
 
