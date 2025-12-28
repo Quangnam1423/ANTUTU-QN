@@ -95,3 +95,25 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define ANTUTU_API_IMPORT
 
 #endif
+
+////////////////////////////////////////////////////////////
+// Define ANTUTU_API macro for proper import / export
+////////////////////////////////////////////////////////////
+#if defined(ANTUTU_SYSTEM_WINDOWS) || defined(__linux__)
+
+#if defined(ANTUTU_LIB_EXPORT)
+
+// We are building this library
+#define ANTUTU_API ANTUTU_API_EXPORT
+
+#else
+
+// We are using this library
+#define ANTUTU_API ANTUTU_API_IMPORT
+
+#endif
+
+// if not import or export defined, define it as empty
+#else
+    #define ANTUTU_API
+#endif
