@@ -1,0 +1,15 @@
+[submodule "VulkanEngine/test/windowinits/glfw"]
+	path = VulkanEngine/test/windowinits/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "VulkanEngine/test/windowinits/ThirdParty/glfw"]
+	path = VulkanEngine/test/windowinits/ThirdParty/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "VulkanEngine/test/windowinits/ThirdParty/glm"]
+	path = VulkanEngine/test/windowinits/ThirdParty/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "VulkanEngine/ThirdParty/glfw"]
+	path = VulkanEngine/ThirdParty/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "VulkanEngine/ThirdParty/glm"]
+	path = VulkanEngine/ThirdParty/glm
+	url = https://github.com/g-truc/glm.git

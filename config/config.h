@@ -1,9 +1,0 @@
-#ifndef CONFIG_H
-#define CONFIG_H
-
-#define ENGINE_NAME "Antutu"
-#define ENGINE_VERSION "1.0.0"
-#define ENGINE_WIDTH_DEFAULT 800
-#define ENGINE_HEIGHT_DEFAULT 600
-
-#endif // CONFIG_H
