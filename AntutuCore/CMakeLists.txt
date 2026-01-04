@@ -23,6 +23,8 @@ set(ROOT_SRC
 )
 
 set(ALL_CORE_SOURCES
+    ${COMMON_SRC}
+    ${SYSTEM_SRC}
     ${RENDER_SRC}
     ${ROOT_SRC}
 )

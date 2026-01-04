@@ -34,6 +34,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <stdexcept>
 #include <vector>
 #include <functional>
+#include <atomic>
+#include <unordered_map>
+#include <condition_variable>
+#include <thread>
+#include <queue>
 
 namespace att
 {
@@ -44,7 +49,7 @@ namespace System
     /////////////////////////////////////////////////////////////////////////////
     enum class ANTUTU_API LogLevel
     {
-        INFO,
+        INFO = 0,
         WARNING,
         ERROR
     };
@@ -55,7 +60,7 @@ namespace System
     /////////////////////////////////////////////////////////////////////////////
     enum class ANTUTU_API ModuleName
     {
-        CORE,
+        CORE = 0,
         RENDER,
         SYSTEM,
         APPLICATION
@@ -66,9 +71,44 @@ namespace System
     /////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Log Callback Function Type
+     * @brief Log Callback Function Type.
      */
-    using LogCallbackFunction = std::function<void(ModuleName, LogLevel, const std::string&)>;
+    typedef std::function<void(ModuleName, LogLevel, const std::string&)> LogCallbackFunction;
+
+    /**
+     * @brief use for ListenerID stand for a callback function - listener.
+     */
+    typedef uint32_t ListenerID;
+
+    /**
+     * @brief define a message log packet.
+     */
+    typedef struct DefineLOGMESSAGE
+    {
+        std::string message;
+        ModuleName module;
+        LogLevel level;
+    } LogMessage;
+
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// CallbackManager class
+    /////////////////////////////////////////////////////////////////////////////
+    // class ANTUTU_API CallbackManager : public NormalMutex
+    // {
+    // public:
+    //     CallbackManager() = default;
+    //     virtual ~CallbackManager();
+    //     ListenerID AddListener(LogCallbackFunction callback);
+    //     bool RemoveListener(ListenerID);
+    //     void SendLog()
+    // private:
+    //     std::unordered_map<ListenerID, LogCallbackFunction> m_listeners;
+    //     std::atomic<ListenerID> m_nextID;
+    
+    // }; // end CallbackManager declaration.
+
+
 
     /////////////////////////////////////////////////////////////////////////////
     /// Logger Class
@@ -77,29 +117,40 @@ namespace System
     {
     public:
         /**
-         * @brief Log an informational message
-         * 
-         * @param message The message to log
+         * default constructor
          */
-        static void Info(const std::string& message);
+        Logger();
 
         /**
-         * @brief Log a warning message
-         * 
-         * @param message The message to log
+         * default destructor
          */
-        static void Warning(const std::string& message);
+        virtual ~Logger();
 
-        /**
-         * @brief Log an error message
-         * 
-         * @param message The message to log
-         */
-        static void Error(const std::string& message);
+        void WriteLog(ModuleName module, LogLevel level, const std::string& message);
+        void WriteLog(LogMessage msg);
+
+        void AddListener(LogCallbackFunction callback);
+
+        //void SendMessage()
+    public:
+        static void WriteLog(void* log, LogMessage msg);
+        static void WriteLog(void* log, ModuleName module, LogLevel level, const std::string& message);
+        static void StartFunction(void* logger);
+
+    private: 
+        void StartFunction();
 
     private:
-        static std::vector<LogCallbackFunction> m_listeners;
-    };
+        std::string                             m_name;
+        std::vector<LogCallbackFunction>        m_listeners;
+        std::queue<LogMessage>                  m_messageQueue;
+        std::condition_variable                 m_cv;
+        std::atomic<bool>                       m_isRunning;
+        std::thread                             m_workerThread; 
+        std::mutex                              m_workerMutex; 
+    }; // end Logger declaration.
+
+
 } // namespace System
 } // namespace att
 

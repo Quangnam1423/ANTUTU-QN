@@ -132,9 +132,28 @@ namespace att
 
     /// @brief Setup Debug Messenger
     /// @param none of parameters
+    /// this function use a custom DebugMessageCallback,
+    /// that permit listner can get log from vulkan core render or something else.
     void VulkanContext::setupDebugMessenger()
     {
+        // check if debug mode turn on
+        if (m_instanceDescriptor.enableValidationLayers == false)
+        {
+            return;
+        }
 
+        // if debug mode is on, then create message debug and callback for listener
+        vk::DebugUtilsMessageSeverityFlagsEXT           severityFlags(vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose
+                                                                | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning 
+                                                                | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError );
+
+        vk::DebugUtilsMessageTypeFlagsEXT               messageTypeFlags(vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral
+                                                                | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance
+                                                                | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation);
+
+        // vk::DebugUtilsMessengerCreateInfoEXT            debugUtilsMessengerCreateInfoEXT{
+        //                                                     .messageSeverity = severityFlags,
+        //                                                 };
     }
 
     /// @brief  Initialize Vulkan Device
