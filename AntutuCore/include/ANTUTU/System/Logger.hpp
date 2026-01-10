@@ -51,7 +51,8 @@ namespace System
     {
         INFO = 0,
         WARNING,
-        ERROR
+        ERROR,
+        DEBUG
     };
 
 

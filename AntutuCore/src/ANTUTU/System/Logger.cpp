@@ -95,7 +95,9 @@ namespace System
     /// @param logger 
     void Logger::StartFunction(void* logger)
     {
-
+        Logger* log = (Logger*) logger;
+        log->StartFunction();
+        return;
     }
 
 
