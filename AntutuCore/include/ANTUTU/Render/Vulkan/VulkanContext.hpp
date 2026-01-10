@@ -34,9 +34,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <memory>
 #include <stdexcept>
 #include <vector>
+#include <map>
+#include <set>
 
 #if defined(ANTUTU_SYSTEM_WINDOWS)
-    #define VK_USE_PLATFORM_WIN32_KHR // for Windows
+    #define VK_USE_PLATFORM_WIN32_KHR       // for Windows.
+    #include <windows.h>                    // for HWND get from windows or surface.
+#elif defined(ANTUTU_SYSTEM_LINUX)
+    #define VK_USE_PLATFORM_XLIB_KHR        // for Display*, windows using Xlib ubuntu.
+    #include <X11/Xlib.h>
 #endif
 
 
@@ -61,6 +67,10 @@ class GLFWwindow;
 
 namespace att
 {
+    namespace System {
+        class Logger;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     /// Queue Family Indices Structure
     ////////////////////////////////////////////////////////////////////////////
@@ -99,21 +109,40 @@ namespace att
     {
     public:
         /**
-         * @brief Constructor
+         * @brief Constructor.
          * 
-         * @param applicationName Name of the application
-         * @param engineName Name of the engine
-         * @param applicationVersion Version of the application
-         * @param engineVersion Version of the engine
-         * @param apiVersion Vulkan API version
+         * @param applicationName Name of the application.
+         * @param engineName Name of the engine.
+         * @param applicationVersion Version of the application.
+         * @param engineVersion Version of the engine.
+         * @param apiVersion Vulkan API version.
+         * @param logger object to get log from vulkan core.
          */
-        VulkanContext(const char* applicationName = "Antutu Vulkan Engine",
-                      const char* engineName = "No Engine",
-                      uint32_t applicationVersion = VK_MAKE_VERSION(ANTUTU_VERSION_MAJOR, 
+        VulkanContext(const char* applicationName                   = "Antutu Vulkan Engine",
+                      const char* engineName                        = "No Engine",
+                      uint32_t applicationVersion                   = VK_MAKE_VERSION(ANTUTU_VERSION_MAJOR, 
+                                                                        ANTUTU_VERSION_MINOR,   
+                                                                        ANTUTU_VERSION_PATCH),
+                      uint32_t engineVersion                        = VK_MAKE_VERSION(1, 0, 0),
+                      uint32_t apiVersion                           = VK_API_VERSION_1_2,
+                      std::shared_ptr<System::Logger> logger        = nullptr);
+
+        /**
+         * @brief Constructor that automatically create Logger.
+         * 
+         * @param applicationName Name of the application.
+         * @param engineName Name of the engine.
+         * @param applicationVersion Version of the application.
+         * @param engineVersion Version of the engine.
+         * @param apiVersion Vulkan API version.
+         */
+        VulkanContext(const char* applicationName           = "Antutu Vulkan Engine",
+                      const char* engineName                = "No Engine",
+                      uint32_t applicationVersion           = VK_MAKE_VERSION(ANTUTU_VERSION_MAJOR, 
                                                                    ANTUTU_VERSION_MINOR,   
                                                                    ANTUTU_VERSION_PATCH),
-                      uint32_t engineVersion = VK_MAKE_VERSION(1, 0, 0),
-                      uint32_t apiVersion = VK_API_VERSION_1_2);
+                      uint32_t engineVersion                = VK_MAKE_VERSION(1, 0, 0),
+                      uint32_t apiVersion                   = VK_API_VERSION_1_2);
 
         /**
          * @brief Destructor
@@ -139,7 +168,7 @@ namespace att
          * @brief Setup Debug Messenger
          * 
          */
-        void setupDebugMessenger();
+        void SetupDebugMessenger();
 
 
 
@@ -164,7 +193,10 @@ namespace att
         */  
         bool CreateSurface(GLFWwindow* window);
 
+        bool PickPhysicalDevice();
         bool PickPhysicalDevice(vk::SurfaceKHR surface);
+        QueueFamilyIndices FindQueueFamilies(const vk::raii::PhysicalDevice& device);
+
         bool CreateLogicalDevice(vk::SurfaceKHR surface);
 
 
@@ -174,6 +206,10 @@ namespace att
         const vk::raii::Device& GetDevice() const { return m_device; }
         const vk::raii::Queue& GetGraphicsQueue() const { return m_graphicsQueue; }
         const vk::raii::Queue& GetPresentQueue() const { return m_presentQueue; }
+        const std::shared_ptr<System::Logger>& getLogger() const { return m_logger; }
+
+        // Setters
+        void SetLogger(std::shared_ptr<System::Logger> logger) {m_logger = logger; }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// 
@@ -181,22 +217,43 @@ namespace att
         ////////////////////////////////////////////////////////////////////////////////////////////
         uint32_t GetGraphicsQueueFamilyIndex() const { return m_queueIndices.graphicsFamily.value(); }
     private:
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        /// static function to setup sign of Vulkan
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallBack(
+            VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+            VkDebugUtilsMessageTypeFlagsEXT messageType,
+            const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+            void* pUserData
+        );
+
+        int RateDeviceSuitability(const vk::raii::PhysicalDevice& device);
+        bool CheckDeviceExtensionSupport(const vk::raii::PhysicalDevice& device);
+        
+
         bool CheckValidationLayerSupport();
         //void PickPhysicalDevice(vk::SurfaceKHR surface);
         //void CreateLogicalDevice(vk::SurfaceKHR surface);
-        QueueFamilyIndices FindQueueFamilies(vk::PhysicalDevice device, vk::SurfaceKHR surface);
 
 
     private:
+        
+        VulkanInstanceDescriptor                        m_instanceDescriptor;      // descriptor for instance creation
         vk::raii::Context                               m_context;                 // vulkan context
         vk::raii::Instance                              m_instance;                // vulkan instance
+        std::shared_ptr<System::Logger>                 m_logger;                  // logger for get log
         vk::raii::DebugUtilsMessengerEXT                m_debugMessenger;          // debug messenger
+        vk::raii::SurfaceKHR                            m_surface;                 // vulkan surface
         vk::raii::PhysicalDevice                        m_physicalDevice;          // physical device
         vk::raii::Device                                m_device;                  // logical device
         vk::raii::Queue                                 m_graphicsQueue;           // graphics queue
         vk::raii::Queue                                 m_presentQueue;            // graphics and present queues
-        QueueFamilyIndices                              m_queueIndices;            // indices of queue families        
-        VulkanInstanceDescriptor                        m_instanceDescriptor;      // descriptor for instance creation
+        QueueFamilyIndices                              m_queueIndices;            // indices of queue families
+
+        // test.
+        const std::vector<const char*>                  m_deviceExtensions = {
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME
+        };
     };
 }
 
@@ -224,5 +281,6 @@ namespace att
  *     extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
  *  }
  *  return extensions;
-*  }
+ *  }
+ * using CreateNativeSurface() when you want to create a native surface. Supported linux and windows win32API.
  */
