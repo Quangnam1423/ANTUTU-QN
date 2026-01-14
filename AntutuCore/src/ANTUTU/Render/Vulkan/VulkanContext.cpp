@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "ANTUTU/System/Logger.hpp"
 
 #include <GLFW/glfw3.h>
-
+#include "ANTUTU/Render/Vulkan/VulkanContext.hpp"
 /////////////////////////////////////////////////////////////////////////////////////
 /// Implementation att::VulkanContext.
 /////////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,8 @@ namespace att
         m_physicalDevice(nullptr),
         m_device(nullptr),
         m_graphicsQueue(nullptr),
-        m_presentQueue(nullptr)
+        m_presentQueue(nullptr),
+        m_commandPool(nullptr)
     {
         // initialize members.
         m_queueIndices                                      = {};
@@ -74,7 +75,19 @@ namespace att
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////
-    /// void CreateInstance()
+    /// void InitInstance();
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// @brief init full functional of vulkan context.
+    /// using this function if you want create quickly vulkan context and fully.
+    void VulkanContext::InitInstance()
+    {
+        CreateInstance();
+        SetupDebugMessenger();
+        m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_INFO, "Vulkan Instance Initialized successfully.");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// void CreateInstance();
     ////////////////////////////////////////////////////////////////////////////////////////
 
     /// @brief 
@@ -182,11 +195,26 @@ namespace att
         return;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// void InitDevice(vk::SurfaceKHR surface);
+    ////////////////////////////////////////////////////////////////////////////////////////
+    void VulkanContext::InitDevice(vk::SurfaceKHR surface)
+    {
+        if (!PickPhysicalDevice(surface))
+        {
+            throw std::runtime_error("Failed to pick a suitable physical device.");
+        }
+        if (!CreateLogicalDevice(surface))
+        {
+             throw std::runtime_error("Failed to create logical device.");
+        }
+        CreateCommandPool();
+        m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_INFO, "Vulkan Device Initialized successfully.");
+    }
     
     ////////////////////////////////////////////////////////////////////////////////////////
     /// bool CreateNativeSurface(void* windowHandle, void* instanceHandle)
     ////////////////////////////////////////////////////////////////////////////////////////
-
     /// @brief  Initialize Vulkan Device
     /// @param surface
     /// @param windowHandle pointer
@@ -282,7 +310,7 @@ namespace att
     /// @return 
     bool VulkanContext::PickPhysicalDevice()
     {
-        return true;
+        return PickPhysicalDevice(nullptr);
     }
 
 
@@ -295,14 +323,47 @@ namespace att
     /// @return
     bool VulkanContext::PickPhysicalDevice(vk::SurfaceKHR surface)
     {
+        vk::raii::PhysicalDevices devices(m_instance); // Enumerate devices
 
-        return true;
+        if (devices.empty())
+        {
+            m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_ERROR, "Failed to find GPUs with Vulkan support!");
+            return false;
+        }
+
+        // Use a multimap to sort candidates by score
+        std::multimap<int, vk::raii::PhysicalDevice> candidates;
+
+        for (const auto& device : devices)
+        {
+            int score = RateDeviceSuitability(device);
+            candidates.insert(std::make_pair(score, device));
+        }
+
+        // Check if the best candidate is suitable (score > 0)
+        if (candidates.rbegin()->first > 0)
+        {
+            // Move the best device into m_physicalDevice
+            m_physicalDevice = std::move(candidates.rbegin()->second);
+            
+            // Log the selected device name
+            vk::PhysicalDeviceProperties props = m_physicalDevice.getProperties();
+            std::string deviceName = props.deviceName;
+            m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_INFO, "Picked Physical Device: " + deviceName);
+            
+            // Store indices for the selected device
+            m_queueIndices = FindQueueFamilies(m_physicalDevice);
+            
+            return true;
+        }
+
+        m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_ERROR, "Failed to find a suitable GPU!");
+        return false;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////
     /// QueueFamilyIndices FindQueueFamilies(const vk::raii::Physicaldevice& device);
     ////////////////////////////////////////////////////////////////////////////////////////
-
     /// @brief find queue families
     /// @param device 
     /// @return 
@@ -336,15 +397,140 @@ namespace att
         return indices;
     }
 
-    /// @brief 
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// SwapChainSupportDetails QuerySwapChainSupport(vk::PhysicalDevice device, vk::Surface surface);
+    ////////////////////////////////////////////////////////////////////////////////////////
+    SwapChainSupportDetails VulkanContext::QuerySwapChainSupport(vk::PhysicalDevice device, vk::SurfaceKHR surface)
+    {
+        SwapChainSupportDetails details;
+        if (!surface) { return details; }
+        details.capabilities = device.getSurfaceCapabilitiesKHR(surface);
+        details.formats      = device.getSurfaceFormatsKHR(surface);
+        details.presentModes = device.getSurfacePresentModesKHR(surface);
+
+    return details;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// bool CreateLogicalDevice(vk::SurfaceKHR surface);
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// @brief
     /// @param surface 
     /// @return 
     bool VulkanContext::CreateLogicalDevice(vk::SurfaceKHR surface)
     {
-        return false;
+        try 
+        {
+            QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
+
+            std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos;
+            std::set<uint32_t> uniqueQueueFamilies = { 
+                indices.graphicsFamily.value(), 
+                indices.presentFamily.value() 
+            };
+
+            float queuePriority = 1.0f;
+            for (uint32_t queueFamily : uniqueQueueFamilies)
+            {
+                vk::DeviceQueueCreateInfo queueCreateInfo{};
+                queueCreateInfo.queueFamilyIndex = queueFamily;
+                queueCreateInfo.queueCount = 1;
+                queueCreateInfo.pQueuePriorities = &queuePriority;
+                queueCreateInfos.push_back(queueCreateInfo);
+            }
+
+            // Specify device features
+            vk::PhysicalDeviceFeatures deviceFeatures{};
+            deviceFeatures.samplerAnisotropy = VK_TRUE; 
+            deviceFeatures.geometryShader = VK_TRUE;
+
+            // Chain for Vulkan 1.2/1.3 features (Synchronization2, DynamicRendering) if needed
+            // Keeping it simple for now based on your previous Context class structure
+            vk::DeviceCreateInfo createInfo{};
+            createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+            createInfo.pQueueCreateInfos = queueCreateInfos.data();
+
+            createInfo.pEnabledFeatures = &deviceFeatures;
+
+            // Enable Extensions (Swapchain)
+            createInfo.enabledExtensionCount = static_cast<uint32_t>(m_deviceExtensions.size());
+            createInfo.ppEnabledExtensionNames = m_deviceExtensions.data();
+
+            // Enable Validation Layers for Device (Compatibility with older Vulkan implementations)
+            if (m_instanceDescriptor.enableValidationLayers)
+            {
+                createInfo.enabledLayerCount = static_cast<uint32_t>(m_instanceDescriptor.layers.size());
+                createInfo.ppEnabledLayerNames = m_instanceDescriptor.layers.data();
+            }
+            else
+            {
+                createInfo.enabledLayerCount = 0;
+            }
+
+            // Create the RAII Device
+            m_device = vk::raii::Device(m_physicalDevice, createInfo);
+
+            // Get Queues
+            m_graphicsQueue = m_device.getQueue(indices.graphicsFamily.value(), 0);
+            m_presentQueue = m_device.getQueue(indices.presentFamily.value(), 0);
+
+            return true;
+        }
+        catch (const std::exception& e)
+        {
+            m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_ERROR, "Logical Device Creation Failed: " + std::string(e.what()));
+            return false;
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// vk::raii::CommandBuffer BeginSingleTimeCommand();
+    ////////////////////////////////////////////////////////////////////////////////////////
+    vk::raii::CommandBuffer VulkanContext::BeginSingleTimeCommands()
+    {
+        vk::CommandBufferAllocateInfo allocInfo{};
+        allocInfo.level = vk::CommandBufferLevel::ePrimary;
+        // Access the underlying handle of command pool
+        allocInfo.commandPool = *m_commandPool; 
+        allocInfo.commandBufferCount = 1;
+
+        // Create a temporary vector to hold the allocated buffer
+        vk::raii::CommandBuffers commandBuffers(m_device, allocInfo);
+        
+        // Move the first (and only) buffer out to return it
+        vk::raii::CommandBuffer commandBuffer = std::move(commandBuffers[0]);
+
+        vk::CommandBufferBeginInfo beginInfo{};
+        beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+
+        commandBuffer.begin(beginInfo);
+
+        return commandBuffer;
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// void EndSingleTimeCommand(vk::raii::CommandBuffer& commandBuffer);
+    ////////////////////////////////////////////////////////////////////////////////////////
+    void VulkanContext::EndSingleTimeCommand(vk::raii::CommandBuffer& commandBuffer)
+    {
+        commandBuffer.end();
+
+        vk::SubmitInfo submitInfo{};
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &*commandBuffer; // Dereference RAII object to get handle address
+
+        m_graphicsQueue.submit(submitInfo, nullptr);
+        m_graphicsQueue.waitIdle();
+        
+        // RAII CommandBuffer will be destroyed automatically when it goes out of scope 
+        // in the calling function (or if it was a temporary wrapper), 
+        // but since we allocated it from m_commandPool, we rely on the caller to let it expire 
+        // or explicitly free it if using non-RAII allocation logic. 
+        // With vk::raii, strictly speaking, the object returned by BeginSingleTimeCommands 
+        // owns the handle. When that object dies, the command buffer is freed.
     }
 
-
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallBack();
+    ////////////////////////////////////////////////////////////////////////////////////////
     VKAPI_ATTR VkBool32 VKAPI_CALL VulkanContext::DebugCallBack(
         VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
         VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -383,6 +569,9 @@ namespace att
         return VK_FALSE;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// int RateDeviceSuitability(const vk::raii::PhysicalDevice& device);
+    ////////////////////////////////////////////////////////////////////////////////////////
     int VulkanContext::RateDeviceSuitability(const vk::raii::PhysicalDevice& device)
     {
         int score = 0;
@@ -423,6 +612,10 @@ namespace att
         return score;
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// bool CheckDeviceExtensionSupport(const vk::raii::PhysicalDevice& device);
+    ////////////////////////////////////////////////////////////////////////////////////////
     /// @brief 
     /// @param device 
     /// @return 
@@ -439,20 +632,60 @@ namespace att
         return requiredExtensions.empty();
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// void CreateCommandPool();
+    ////////////////////////////////////////////////////////////////////////////////////////
+    void VulkanContext::CreateCommandPool()
+    {
+        try 
+        {
+            QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(m_physicalDevice);
+
+            vk::CommandPoolCreateInfo poolInfo{};
+            // eResetCommandBuffer allows command buffers to be re-recorded individually
+            poolInfo.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer; 
+            poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+
+            m_commandPool = vk::raii::CommandPool(m_device, poolInfo);
+            
+            m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_INFO, "Command Pool Created.");
+        }
+        catch (const std::exception& e)
+        {
+            m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_ERROR, "Failed to create Command Pool: " + std::string(e.what()));
+            throw; 
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    /// bool CheckValicationLayerSupport();
+    ////////////////////////////////////////////////////////////////////////////////////////
     /// @brief 
     /// @return 
     bool VulkanContext::CheckValidationLayerSupport()
     {
+        std::vector<vk::LayerProperties> availableLayers = m_context.enumerateInstanceLayerProperties();
+
+        for (const char* layerName : m_instanceDescriptor.layers)
+        {
+            bool layerFound = false;
+
+            for (const auto& layerProperties : availableLayers)
+            {
+                if (strcmp(layerName, layerProperties.layerName) == 0)
+                {
+                    layerFound = true;
+                    break;
+                }
+            }
+
+            if (!layerFound)
+            {
+                return false;
+            }
+        }
+
         return true;
     }
     
-    
-    /// @brief init full functional of vulkan context.
-    /// using this function if you want create quickly vulkan context and fully.
-    void VulkanContext::InitInstance()
-    {
-        // To be implemented.
-        //CreateInstance();
-    }
-
 } // end att namespace

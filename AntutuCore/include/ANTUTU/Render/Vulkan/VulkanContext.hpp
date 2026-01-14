@@ -84,6 +84,15 @@ namespace att
     };
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Swap Chain Support Details Structure
+    ////////////////////////////////////////////////////////////////////////////
+    struct ANTUTU_API SwapChainSupportDetails {
+        vk::SurfaceCapabilitiesKHR capabilities;
+        std::vector<vk::SurfaceFormatKHR> formats;
+        std::vector<vk::PresentModeKHR> presentModes;
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Queue Family Indices Structure
     ////////////////////////////////////////////////////////////////////////////
     struct ANTUTU_API VulkanInstanceDescriptor
@@ -196,26 +205,34 @@ namespace att
         bool PickPhysicalDevice();
         bool PickPhysicalDevice(vk::SurfaceKHR surface);
         QueueFamilyIndices FindQueueFamilies(const vk::raii::PhysicalDevice& device);
+        SwapChainSupportDetails QuerySwapChainSupport(vk::PhysicalDevice device, vk::SurfaceKHR surface);
 
         bool CreateLogicalDevice(vk::SurfaceKHR surface);
 
 
-        // Getters
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        /// Getters
+        ////////////////////////////////////////////////////////////////////////////////////////////
         const vk::raii::Instance& GetInstance() const { return m_instance; }
         const vk::raii::PhysicalDevice& GetPhysicalDevice() const { return m_physicalDevice; }
         const vk::raii::Device& GetDevice() const { return m_device; }
         const vk::raii::Queue& GetGraphicsQueue() const { return m_graphicsQueue; }
         const vk::raii::Queue& GetPresentQueue() const { return m_presentQueue; }
         const std::shared_ptr<System::Logger>& getLogger() const { return m_logger; }
+        const vk::raii::CommandPool& GetCommandPool() const {return m_commandPool; }
 
-        // Setters
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        /// Setters
+        ////////////////////////////////////////////////////////////////////////////////////////////
         void SetLogger(std::shared_ptr<System::Logger> logger) {m_logger = logger; }
+        uint32_t GetGraphicsQueueFamilyIndex() const { return m_queueIndices.graphicsFamily.value(); }
+
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        /// 
-        ///
+        /// helper functions public
         ////////////////////////////////////////////////////////////////////////////////////////////
-        uint32_t GetGraphicsQueueFamilyIndex() const { return m_queueIndices.graphicsFamily.value(); }
+        vk::raii::CommandBuffer BeginSingleTimeCommands();
+        void EndSingleTimeCommand(vk::raii::CommandBuffer& commandBuffer);
     private:
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// static function to setup sign of Vulkan
@@ -227,10 +244,13 @@ namespace att
             void* pUserData
         );
 
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        /// helper functions
+        ////////////////////////////////////////////////////////////////////////////////////////////
         int RateDeviceSuitability(const vk::raii::PhysicalDevice& device);
         bool CheckDeviceExtensionSupport(const vk::raii::PhysicalDevice& device);
-        
-
+        void CreateCommandPool();
         bool CheckValidationLayerSupport();
         //void PickPhysicalDevice(vk::SurfaceKHR surface);
         //void CreateLogicalDevice(vk::SurfaceKHR surface);
@@ -248,6 +268,7 @@ namespace att
         vk::raii::Device                                m_device;                  // logical device
         vk::raii::Queue                                 m_graphicsQueue;           // graphics queue
         vk::raii::Queue                                 m_presentQueue;            // graphics and present queues
+        vk::raii::CommandPool                           m_commandPool;             // command pool
         QueueFamilyIndices                              m_queueIndices;            // indices of queue families
 
         // test.

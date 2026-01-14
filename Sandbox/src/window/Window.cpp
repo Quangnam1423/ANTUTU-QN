@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 // =========================Antutu::Window.cpp===========================
-#include "Window.hpp"
+#include "window/Window.hpp"
 #include <stdexcept>
 
 namespace Antutu 
