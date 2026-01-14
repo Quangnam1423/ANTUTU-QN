@@ -35,10 +35,15 @@ antutu_add_module(AntutuCore
         ${ALL_CORE_SOURCES}
     LINK_LIBS
         Vulkan::Vulkan
-        glm::glm
+        glm
+        glfw
 )
 
 target_compile_definitions(AntutuCore PRIVATE ANTUTU_CORE_EXPORT)
+
+if (WIN32)
+    target_compile_definitions(AntutuCore PRIVATE WIN32_LEAN_AND_MEAN)
+endif()
 
 target_include_directories(AntutuCore
     PUBLIC

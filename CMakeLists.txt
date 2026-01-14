@@ -26,15 +26,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)         # Executable
 ################################################################################
 
 # Copy target binary to Binaries folder after build
-function(antutu_copy_to_binaries TARGET_NAME)
-    if(NOT ANDROID)
-        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/Binaries
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${TARGET_NAME}> ${CMAKE_BINARY_DIR}/Binaries/
-            COMMENT "Copying ${TARGET_NAME} to Binaries folder"
-        )
-    endif()
-endfunction()
+# function(antutu_copy_to_binaries TARGET_NAME)
+#     if(NOT ANDROID)
+#         add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+#             COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/Binaries
+#             COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${TARGET_NAME}> ${CMAKE_BINARY_DIR}/Binaries/
+#             COMMENT "Copying ${TARGET_NAME} to Binaries folder"
+#         )
+#     endif()
+# endfunction()
 
 # Function to add a module (executable or library) with specified sources and link libraries
 function(antutu_add_module target_name)
@@ -50,7 +50,7 @@ function(antutu_add_module target_name)
         else()
             add_executable(${target_name} ${ARG_SOURCES})
             set_target_properties(${target_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/binary)     
-            antutu_copy_to_binaries(${target_name})
+            # antutu_copy_to_binaries(${target_name})
         endif()
     elseif(ARG_TYPE STREQUAL "STATIC")
         add_library(${target_name} STATIC ${ARG_SOURCES})
@@ -58,7 +58,7 @@ function(antutu_add_module target_name)
         add_library(${target_name} SHARED ${ARG_SOURCES})
         string(TOUPPER ${target_name} NAME_UPPER)
         target_compile_definitions(${target_name} PRIVATE ${NAME_UPPER}_EXPORTS)
-        antutu_copy_to_binaries(${target_name})
+        # antutu_copy_to_binaries(${target_name})
 
     else()
         message(FATAL_ERROR "antutu_add_module: Unknown TYPE '${ARG_TYPE}' for target '${target_name}'. Use EXE, STATIC, or SHARED.")
@@ -222,10 +222,6 @@ else()
 	message(FATAL_ERROR "Wrong ANTUTU_GR_BACKEND")
 endif()
 
-if(NOT DEFINED CMAKE_BUILD_TYPE)
-	message(FATAL_ERROR "You need to define CMAKE_BUILD_TYPE")
-endif()
-
 ################################################################################
 # Common compiler & linker flags                                               #
 ################################################################################
@@ -234,11 +230,13 @@ if(MINGW)
 	add_compile_options(-mconsole)
 endif()
 
-add_definitions(
-	-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS
-    -DANTUTU_BUILD
-	-DIMGUI_USER_CONFIG=<Antutu/Ui/ImGuiConfig.h>
-	-D_CRT_SECURE_NO_WARNINGS=1
+add_compile_definitions(
+    SPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS
+    ANTUTU_BUILD
+    IMGUI_USER_CONFIG=<Antutu/Ui/ImGuiConfig.h>
+    _CRT_SECURE_NO_WARNINGS=1
+    $<$<CONFIG:Debug>:DEBUG>
+    $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
 )
 
 if(NOT MSVC)
@@ -270,7 +268,6 @@ if(NOT MSVC)
 
 	if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
 		add_compile_options(-O3)
-		add_definitions(-DNDEBUG)
 	elseif(${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
 		add_compile_options(-O3 -g3 -fno-omit-frame-pointer)
 		# set(LINKER_FLAGS "${LINKER_FLAGS} -rdynamic ")
@@ -290,13 +287,21 @@ else()
         -DNOMINMAX
     )
 
-    if(${CMAKE_BUILD_TYPE} STREQUAL "Release" OR ${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
-        add_compile_options(/GS- /Oi /Ob2)
-        
-        add_definitions(-D_ITERATOR_DEBUG_LEVEL=0) 
-    else()
-        add_compile_options(/RTC1 /Ob0)
-    endif()
+    add_compile_options(
+        $<$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>:/GS->
+        $<$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>:/Oi>
+        $<$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>:/Ob2>
+    )
+    
+    add_compile_definitions(
+        $<$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>:_ITERATOR_DEBUG_LEVEL=0>
+    )
+
+    # 2. Cấu hình cho Debug
+    add_compile_options(
+        $<$<CONFIG:Debug>:/RTC1>
+        $<$<CONFIG:Debug>:/Ob0>
+    )
 
 endif()
 
@@ -322,6 +327,21 @@ endif()
 ################################################################################
 
 add_subdirectory(ThirdParty)
+
+if(WIN32)
+    if(DEFINED ENV{VULKAN_SDK})
+        list(APPEND CMAKE_PREFIX_PATH "$ENV{VULKAN_SDK}") 
+        
+        set(Vulkan_INCLUDE_DIR "$ENV{VULKAN_SDK}/Include")
+        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+            set(Vulkan_LIBRARY "$ENV{VULKAN_SDK}/Lib/vulkan-1.lib") # 64-bit
+        else()
+            set(Vulkan_LIBRARY "$ENV{VULKAN_SDK}/Lib32/vulkan-1.lib") # 32-bit
+        endif()
+    else()
+        message(WARNING "VULKAN_SDK env variable is missing. Please install Vulkan SDK!")
+    endif()
+endif()
 
 find_package(Vulkan REQUIRED)
 message("++ Found Vulkan: ${Vulkan_INCLUDE_DIRS}")

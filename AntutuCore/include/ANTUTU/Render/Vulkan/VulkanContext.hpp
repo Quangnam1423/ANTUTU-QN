@@ -63,7 +63,7 @@ const std::vector<char const*> validationLayers = {
 #endif
 
 // Forward declaration of GLFWwindow
-class GLFWwindow; 
+struct GLFWwindow; 
 
 namespace att
 {
@@ -127,22 +127,22 @@ namespace att
                       uint32_t apiVersion                           = VK_API_VERSION_1_2,
                       std::shared_ptr<System::Logger> logger        = nullptr);
 
-        /**
-         * @brief Constructor that automatically create Logger.
-         * 
-         * @param applicationName Name of the application.
-         * @param engineName Name of the engine.
-         * @param applicationVersion Version of the application.
-         * @param engineVersion Version of the engine.
-         * @param apiVersion Vulkan API version.
-         */
-        VulkanContext(const char* applicationName           = "Antutu Vulkan Engine",
-                      const char* engineName                = "No Engine",
-                      uint32_t applicationVersion           = VK_MAKE_VERSION(ANTUTU_VERSION_MAJOR, 
-                                                                   ANTUTU_VERSION_MINOR,   
-                                                                   ANTUTU_VERSION_PATCH),
-                      uint32_t engineVersion                = VK_MAKE_VERSION(1, 0, 0),
-                      uint32_t apiVersion                   = VK_API_VERSION_1_2);
+        // /**
+        //  * @brief Constructor that automatically create Logger.
+        //  * 
+        //  * @param applicationName Name of the application.
+        //  * @param engineName Name of the engine.
+        //  * @param applicationVersion Version of the application.
+        //  * @param engineVersion Version of the engine.
+        //  * @param apiVersion Vulkan API version.
+        //  */
+        // VulkanContext(const char* applicationName           = "Antutu Vulkan Engine",
+        //               const char* engineName                = "No Engine",
+        //               uint32_t applicationVersion           = VK_MAKE_VERSION(ANTUTU_VERSION_MAJOR, 
+        //                                                            ANTUTU_VERSION_MINOR,   
+        //                                                            ANTUTU_VERSION_PATCH),
+        //               uint32_t engineVersion                = VK_MAKE_VERSION(1, 0, 0),
+        //               uint32_t apiVersion                   = VK_API_VERSION_1_2);
 
         /**
          * @brief Destructor

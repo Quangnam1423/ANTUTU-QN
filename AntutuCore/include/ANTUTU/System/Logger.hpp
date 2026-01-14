@@ -49,10 +49,10 @@ namespace System
     /////////////////////////////////////////////////////////////////////////////
     enum class ANTUTU_API LogLevel
     {
-        INFO = 0,
-        WARNING,
-        ERROR,
-        DEBUG
+        LOG_INFO = 0,
+        LOG_WARNING,
+        LOG_ERROR,
+        LOG_DEBUG
     };
 
 
@@ -61,10 +61,10 @@ namespace System
     /////////////////////////////////////////////////////////////////////////////
     enum class ANTUTU_API ModuleName
     {
-        CORE = 0,
-        RENDER,
-        SYSTEM,
-        APPLICATION
+        MODULE_CORE = 0,
+        MODULE_RENDER,
+        MODULE_SYSTEM,
+        MODULE_APPLICATION
     };
 
     /////////////////////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ namespace System
     /**
      * @brief Log Callback Function Type.
      */
-    typedef std::function<void(ModuleName, LogLevel, const std::string&)> LogCallbackFunction;
+    typedef std::function<void(System::ModuleName, LogLevel, const std::string&)> LogCallbackFunction;
 
     /**
      * @brief use for ListenerID stand for a callback function - listener.

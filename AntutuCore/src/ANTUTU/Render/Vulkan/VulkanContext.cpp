@@ -175,8 +175,9 @@ namespace att
         vk::DebugUtilsMessengerCreateInfoEXT            debugUtilsMessengerCreateInfoEXT{};
         debugUtilsMessengerCreateInfoEXT.messageSeverity        = severityFlags;
         debugUtilsMessengerCreateInfoEXT.messageType            = messageTypeFlags;
-        debugUtilsMessengerCreateInfoEXT.pfnUserCallback        = &DebugCallBack;
-        debugUtilsMessengerCreateInfoEXT.pUserData              = this;
+        debugUtilsMessengerCreateInfoEXT.pfnUserCallback = reinterpret_cast<vk::PFN_DebugUtilsMessengerCallbackEXT>(VulkanContext::DebugCallBack);
+    
+        debugUtilsMessengerCreateInfoEXT.pUserData       = this;
 
         return;
     }
@@ -197,7 +198,7 @@ namespace att
             // check windowsHandle
             if (windowHandle == nullptr)
             {
-                m_logger->WriteLog(System::ModuleName::CORE, System::LogLevel::ERROR, "window is nullptr.");
+                m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_ERROR, "window is nullptr.");
                 return false;
             }
 
@@ -228,7 +229,7 @@ namespace att
         } 
         catch (const std::exception& e) {
             // return error
-            m_logger->WriteLog(System::ModuleName::CORE, System::LogLevel::ERROR, e.what());
+            m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_ERROR, e.what());
             return false;
         }
         return true;
@@ -249,7 +250,7 @@ namespace att
         {
             if (window == nullptr)
             {
-                m_logger->WriteLog(System::ModuleName::CORE, System::LogLevel::ERROR, "window is nullptr.");
+                m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_ERROR, "window is nullptr.");
                 return false;
             }
 
@@ -258,7 +259,7 @@ namespace att
 
             if (result != VK_SUCCESS)
             {
-                m_logger->WriteLog(System::ModuleName::CORE, System::LogLevel::ERROR, "cannot create glfw surface.");
+                m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_ERROR, "cannot create glfw surface.");
                 return false;
             }
 
@@ -267,7 +268,7 @@ namespace att
         }
         catch(const std::exception& e) {
             // return error
-            m_logger->WriteLog(System::ModuleName::CORE, System::LogLevel::ERROR, e.what());
+            m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_ERROR, e.what());
             return false;
         }
         
@@ -358,13 +359,13 @@ namespace att
         if (!logger)
             return VK_FALSE;
 
-        System::LogLevel level = att::System::LogLevel::INFO;
+        System::LogLevel level = att::System::LogLevel::LOG_INFO;
         if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-            level = System::LogLevel::ERROR;
+            level = System::LogLevel::LOG_ERROR;
         else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-            level = System::LogLevel::WARNING;
+            level = System::LogLevel::LOG_WARNING;
         else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
-            level = System::LogLevel::DEBUG;
+            level = System::LogLevel::LOG_DEBUG;
 
         // get type of message 
         std::string prefix = "";
@@ -377,7 +378,7 @@ namespace att
 
         // final message data
         std::string msgBody = prefix + std::string(pCallbackData->pMessage);
-        logger->WriteLog(System::ModuleName::CORE, level, msgBody);
+        logger->WriteLog(System::ModuleName::MODULE_CORE, level, msgBody);
 
         return VK_FALSE;
     }
@@ -391,7 +392,7 @@ namespace att
 
         // check geometry shader
         if (!deviceFeatures.geometryShader) {
-            m_logger->WriteLog(System::ModuleName::CORE, System::LogLevel::WARNING, "There is no Geometry Shader.");
+            m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_WARNING, "There is no Geometry Shader.");
             return 0;
         }
 
@@ -399,14 +400,14 @@ namespace att
         QueueFamilyIndices indices = FindQueueFamilies(device);
         if (indices.isComplete() == false)
         {
-            m_logger->WriteLog(System::ModuleName::CORE, System::LogLevel::WARNING, "There is no QueueFamilyIndices.");
+            m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_WARNING, "There is no QueueFamilyIndices.");
             return 0;
         }
 
         // check if has extension supporting
         if (CheckDeviceExtensionSupport(device) == false)
         {
-            m_logger->WriteLog(System::ModuleName::CORE, System::LogLevel::WARNING, "Device do not support extension.");
+            m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_WARNING, "Device do not support extension.");
             return 0;
         }
 
@@ -418,7 +419,7 @@ namespace att
 
         score += deviceProperties.limits.maxImageDimension2D;
 
-        m_logger->WriteLog(System::ModuleName::CORE, System::LogLevel::INFO, "get score for physical device sucessfully.");
+        m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_INFO, "get score for physical device sucessfully.");
         return score;
     }
 
