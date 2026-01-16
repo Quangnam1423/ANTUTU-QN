@@ -24,11 +24,21 @@ namespace System
 {
     Logger::Logger() : m_isRunning(true)
     {
+        m_workerThread = std::thread(&Logger::StartFunction, this);
     }
 
     /// @brief destructor
     Logger::~Logger()
     {
+        {
+            std::lock_guard<std::mutex> lock(m_workerMutex);
+            m_isRunning = false; 
+        }
+        m_cv.notify_all();
+        if (m_workerThread.joinable()) 
+        {
+            m_workerThread.join(); 
+        }
         lock();
         m_listeners.clear();
         unlock();
@@ -49,7 +59,7 @@ namespace System
         lock();
         m_messageQueue.push(msg);
         unlock();
-
+        m_cv.notify_all();
         return;
     }
 
@@ -60,7 +70,7 @@ namespace System
         lock();
         m_messageQueue.push(msg);
         unlock();
-
+        m_cv.notify_all();
         return;
     }
 
@@ -93,7 +103,7 @@ namespace System
 
     /// @brief 
     /// @param logger 
-    void Logger::StartFunction(void* logger)
+    void Logger::LoggerStartFunction(void* logger)
     {
         Logger* log = (Logger*) logger;
         log->StartFunction();

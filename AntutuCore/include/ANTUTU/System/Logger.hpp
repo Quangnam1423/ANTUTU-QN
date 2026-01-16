@@ -136,7 +136,7 @@ namespace System
     public:
         static void WriteLog(void* log, LogMessage msg);
         static void WriteLog(void* log, ModuleName module, LogLevel level, const std::string& message);
-        static void StartFunction(void* logger);
+        static void LoggerStartFunction(void* logger);
 
     private: 
         void StartFunction();

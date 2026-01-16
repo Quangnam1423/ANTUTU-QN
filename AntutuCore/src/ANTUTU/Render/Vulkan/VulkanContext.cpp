@@ -191,7 +191,7 @@ namespace att
         debugUtilsMessengerCreateInfoEXT.pfnUserCallback = reinterpret_cast<vk::PFN_DebugUtilsMessengerCallbackEXT>(VulkanContext::DebugCallBack);
     
         debugUtilsMessengerCreateInfoEXT.pUserData       = this;
-
+        m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_INFO, "Setup debug messenger successfully!.");
         return;
     }
 

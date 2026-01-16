@@ -57,9 +57,9 @@ const std::vector<char const*> validationLayers = {
 };
 
 #ifdef NDEBUG
-    const bool enableValidationLayers = true;
+    const bool enableValidationLayers = false;
 #else
-    const bool enableValidationLayers = false; 
+    const bool enableValidationLayers = true; 
 #endif
 
 // Forward declaration of GLFWwindow

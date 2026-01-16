@@ -2,13 +2,58 @@
 #include <memory>
 #include <ANTUTU/Render/Vulkan/VulkanContext.hpp>
 #include <ANTUTU/System/Logger.hpp>
+#include "window/Window.hpp"
+
+void PrintLog(att::System::ModuleName moduleName, att::System::LogLevel level, const std::string msgBody);
 
 int main()
 {
-    att::VulkanContext* context = new att::VulkanContext();
+    std::cout << "start" << std::endl;
+    // init glfw windows.
+    Antutu::Window* window = new Antutu::Window(800, 600, "SandBox");
+    // create vulkan context.
     std::shared_ptr<att::System::Logger> logger = std::make_shared<att::System::Logger>();
+    logger->AddListener(PrintLog);
+    att::VulkanContext* context = new att::VulkanContext();
     context->SetLogger(logger);
+    context->InitInstance();
+
+    while(window->ShouldClose() == false)
+    {
+        window->PollEvents();
+
+    }
+    delete window;
+    //delete context;
     return 0;
+}
+
+void PrintLog(att::System::ModuleName moduleName, att::System::LogLevel level, const std::string msgBody)
+{
+    std::string string_module_name;
+    std::string string_level;
+    if (moduleName == att::System::ModuleName::MODULE_RENDER)
+    {
+        string_module_name = "Render Module";
+    }
+
+    if (level == att::System::LogLevel::LOG_DEBUG)
+    {
+        string_level = "Debug";
+    }
+    else if (level == att::System::LogLevel::LOG_ERROR)
+    {
+        string_level = "Error";
+    }
+    else if (level == att::System::LogLevel::LOG_INFO)
+    {
+        string_level = "Info";
+    }
+    else
+        string_level = "Warning";
+
+    //printf("%s: %s: %s", string_module_name.c_str(), string_level.c_str(), msgBody.c_str());
+    std::cout << string_module_name << ": " << string_level << " " << msgBody << std::endl;
 }
 
 
