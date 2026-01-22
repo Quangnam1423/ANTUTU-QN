@@ -64,6 +64,26 @@ namespace att
         m_instanceDescriptor.enableValidationLayers         = enableValidationLayers;
     }
 
+
+    VulkanContext::VulkanContext(const char* applicationName,
+                                const char* engineName,
+                                uint32_t applicationVersion,
+                                uint32_t apiVersion,
+                                bool enableValidation
+    ) : m_context(),
+        m_instance(nullptr),
+        m_logger(nullptr),
+        m_debugMessenger(nullptr),
+        m_surface(nullptr),
+        m_physicalDevice(nullptr),
+        m_device(nullptr),
+        m_graphicsQueue(nullptr),
+        m_presentQueue(nullptr),
+        m_commandPool(nullptr)
+    {
+
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////
     /// Destructor
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -261,46 +281,6 @@ namespace att
             return false;
         }
         return true;
-    }
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////
-    /// bool CreateSurface(GLFWwindow* window);
-    ////////////////////////////////////////////////////////////////////////////////////////
-
-    /// @brief Create Surface that use when you use GFLW for create windows.     
-    /// @param GLFWwindow pointer
-    /// @return 
-    bool VulkanContext::CreateSurface(GLFWwindow* window)
-    {
-        try
-        {
-            if (window == nullptr)
-            {
-                m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_ERROR, "window is nullptr.");
-                return false;
-            }
-
-            VkSurfaceKHR rawSurface;
-            VkResult result = glfwCreateWindowSurface(*m_instance, window, nullptr, &rawSurface);
-
-            if (result != VK_SUCCESS)
-            {
-                m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_ERROR, "cannot create glfw surface.");
-                return false;
-            }
-
-            m_surface = vk::raii::SurfaceKHR(m_instance, rawSurface);
-            return true;
-        }
-        catch(const std::exception& e) {
-            // return error
-            m_logger->WriteLog(System::ModuleName::MODULE_CORE, System::LogLevel::LOG_ERROR, e.what());
-            return false;
-        }
-        
-        return true; 
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////

@@ -72,4 +72,31 @@ namespace Antutu
     {
         return m_window;
     }
+
+    void* Window::GetNativeWindowHandle() const
+    {
+        if (m_window == nullptr)
+        {
+            return nullptr;
+        }
+        // return ptr as OS madatory.
+        #if defined(_WIN32)
+            return (void*)glfwGetWin32Window(m_window);
+        #elif defined(__linux__)
+            return (void*)glfwGetWin32Window(m_window);
+        #else
+            return nullptr;
+        #endif
+    }
+
+    void* Window::GetNativeInstanceHandle() const 
+    {
+        #if defined(_WIN32)
+            return (void*)GetModuleHandle(nullptr);
+        #elif defined(__linux__)
+            return (void*)glfwGetX11Display();
+        #else
+            return nullptr;
+        #endif
+    }
 }

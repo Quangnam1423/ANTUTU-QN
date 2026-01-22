@@ -7,8 +7,13 @@ set(COMMON_SRC
 )
 
 set(RENDER_SRC
+    #source and cpp files for classes.
     ${INC_DIR}/ANTUTU/Render/Vulkan/VulkanContext.hpp
     ${SRC_DIR}/ANTUTU/Render/Vulkan/VulkanContext.cpp
+
+    # header only
+    ${INC_DIR}/ANTUTU/Render/IVulkanPlatform.hpp
+    ${INC_DIR}/ANTUTU/Render/VulkanCommon.hpp
 )
 
 set(SYSTEM_SRC

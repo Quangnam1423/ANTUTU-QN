@@ -21,6 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define ANTUTU_VULKAN_CONTEXT_HPP
 
 #include "ANTUTU/Config.hpp"
+#include "ANTUTU/Render/VulkanCommon.hpp"
 
 // Standard Library Includes
 #include <string>
@@ -43,13 +44,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #elif defined(ANTUTU_SYSTEM_LINUX)
     #define VK_USE_PLATFORM_XLIB_KHR        // for Display*, windows using Xlib ubuntu.
     #include <X11/Xlib.h>
-#endif
-
-
-#if defined(__INTELLISENSE__) || !defined(USE_CPP20_MODULES)
-    #include <vulkan/vulkan_raii.hpp>
-#else
-    import vulkan_hpp;
 #endif
 
 const std::vector<char const*> validationLayers = {
@@ -136,6 +130,14 @@ namespace att
                       uint32_t apiVersion                           = VK_API_VERSION_1_2,
                       std::shared_ptr<System::Logger> logger        = nullptr);
 
+                      
+        VulkanContext(const char* applicationName,
+                      const char* engineName,
+                      uint32_t applicationVersion,
+                      uint32_t apiVersion,
+                      bool enableValidation
+        );
+
         // /**
         //  * @brief Constructor that automatically create Logger.
         //  * 
@@ -196,12 +198,6 @@ namespace att
          */
         bool CreateNativeSurface(void* windowHandle, void* instanceHandle = nullptr);                
 
-        /**
-        * @brief Create a Vulkan surface
-        * @return vk::SurfaceKHR Vulkan surface
-        */  
-        bool CreateSurface(GLFWwindow* window);
-
         bool PickPhysicalDevice();
         bool PickPhysicalDevice(vk::SurfaceKHR surface);
         QueueFamilyIndices FindQueueFamilies(const vk::raii::PhysicalDevice& device);
@@ -226,7 +222,9 @@ namespace att
         ////////////////////////////////////////////////////////////////////////////////////////////
         void SetLogger(std::shared_ptr<System::Logger> logger) {m_logger = logger; }
         uint32_t GetGraphicsQueueFamilyIndex() const { return m_queueIndices.graphicsFamily.value(); }
-
+        void AddInstanceExtension(const char* extensionName);
+        void AddInstanceLayer(const char* layerName);
+        void SetInstanceExtensions(const std::vector<const char*>& extensions);
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         /// helper functions public

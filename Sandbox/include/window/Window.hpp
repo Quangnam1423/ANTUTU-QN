@@ -24,8 +24,29 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #define GLFW_INCLUDE_VULKAN
 
+namespace att {
+namespace System {
+    class Logger;
+}
+}
+
 #include <GLFW/glfw3.h>
+// Define macro to glfw expose functions using for Window OS native.
+#if defined(_WIN32)
+    #define GLFW_EXPOSE_NATIVE_WIN32
+    #define WIN32_LEAN_AND_MEAN
+    #include <GLFW/glfw3native.h>
+// Define macro to glfw expose functions using for Linux OS native.
+#elif defined(__linux__)
+    #define GLFW_EXPOSE_NATIVE_X11
+    #include <GLFW/glfw3native.h>
+#endif
+
 #include <string>
+#include <memory>
+
+
+
 namespace Antutu {
     // ======================Window Class Declaration==================
 
@@ -52,6 +73,8 @@ namespace Antutu {
         bool ShouldClose() const;                                       // check if window should close
         void PollEvents() const;                                        // poll window events
         GLFWwindow* GetNativeWindow() const;                            // get the GLFW window pointer
+        void* GetNativeWindowHandle() const;                            // get native window handle
+        void* GetNativeInstanceHandle() const;                          // get native instance handle
 
         // ======getter and setter for width and height=================
         inline int GetWidth() const { return m_width; }
@@ -61,6 +84,7 @@ namespace Antutu {
 
     private:  // private members
         GLFWwindow* m_window;                                           // GLFW window pointer
+        std::shared_ptr<att::System::Logger> m_logger;                  // logger
         int m_width;                                                    // window width
         int m_height;                                                   // window height
         std::string m_title;                                            // window title

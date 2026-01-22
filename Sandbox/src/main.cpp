@@ -8,7 +8,6 @@ void PrintLog(att::System::ModuleName moduleName, att::System::LogLevel level, c
 
 int main()
 {
-    std::cout << "start" << std::endl;
     // init glfw windows.
     Antutu::Window* window = new Antutu::Window(800, 600, "SandBox");
     // create vulkan context.
@@ -17,6 +16,7 @@ int main()
     att::VulkanContext* context = new att::VulkanContext();
     context->SetLogger(logger);
     context->InitInstance();
+    context->CreateNativeSurface((void*)window->GetNativeWindowHandle(), (void*)window->GetNativeInstanceHandle());
 
     while(window->ShouldClose() == false)
     {
@@ -36,6 +36,20 @@ void PrintLog(att::System::ModuleName moduleName, att::System::LogLevel level, c
     {
         string_module_name = "Render Module";
     }
+    else if (moduleName == att::System::ModuleName::MODULE_CORE)
+    {
+        string_module_name = "Core Module";
+    }
+    else if (moduleName == att::System::ModuleName::MODULE_SYSTEM)
+    {
+        string_module_name = "System Module";
+    }
+    else if (moduleName == att::System::ModuleName::MODULE_APPLICATION)
+    {
+        string_module_name = "Application Module";
+    }
+    else
+        string_module_name = "Unknown Module";
 
     if (level == att::System::LogLevel::LOG_DEBUG)
     {
@@ -52,8 +66,13 @@ void PrintLog(att::System::ModuleName moduleName, att::System::LogLevel level, c
     else
         string_level = "Warning";
 
-    //printf("%s: %s: %s", string_module_name.c_str(), string_level.c_str(), msgBody.c_str());
-    std::cout << string_module_name << ": " << string_level << " " << msgBody << std::endl;
+    std::cout << string_module_name 
+              << ": " 
+              << "["
+              << string_level 
+              << "] "
+              << msgBody 
+              << std::endl;
 }
 
 
