@@ -361,8 +361,8 @@ include_directories(
 ################################################################################
 
 option(ANTUTU_BUILD_SANDBOX "Build the sandbox application" ON)
-option(ANTUTU_BUILD_CSHARP_BINDINGS "Build C# Interop DLL" ON)
-option(ANTUTU_BUILD_TESTS "Build unit tests" OFF)
+option(ANTUTU_BUILD_CSHARP_BINDING "Build C# Interop DLL" ON)
+option(ANTUTU_BUILD_TEST "Build unit tests" ON)
 
 
 ################################################################################
@@ -370,11 +370,17 @@ option(ANTUTU_BUILD_TESTS "Build unit tests" OFF)
 ################################################################################
 
 add_subdirectory(AntutuCore)
+#add_subdirectory(Tests)
 
 if(ANTUTU_BUILD_CSHARP_BINDING)
-    add_subdirectory(AntutuInterop)
+    #add_subdirectory(AntutuInterop)
 endif()
 
 if(ANTUTU_BUILD_SANDBOX AND NOT ANDROID)
     add_subdirectory(Sandbox)
+endif()
+
+if(ANTUTU_BUILD_TEST)
+	#enable_testing()
+	add_subdirectory(Tests)
 endif()

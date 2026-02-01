@@ -11,9 +11,22 @@ set(RENDER_SRC
     ${INC_DIR}/ANTUTU/Render/Vulkan/VulkanContext.hpp
     ${SRC_DIR}/ANTUTU/Render/Vulkan/VulkanContext.cpp
 
+    ${INC_DIR}/ANTUTU/Render/Vulkan/VulkanSurface.hpp
+    ${SRC_DIR}/ANTUTU/Render/Vulkan/VulkanSurface.cpp
+
+    #interfaces
+    ${INC_DIR}/ANTUTU/Render/Vulkan/IVulkanPlatform.hpp
+
+    
+    #platform class  implementations
+    ${INC_DIR}/ANTUTU/Render/Vulkan/GLFWVulkanPlatform.hpp
+    ${SRC_DIR}/ANTUTU/Render/Vulkan/GLFWVulkanPlatform.cpp
+
+    ${INC_DIR}/ANTUTU/Render/Vulkan/VulkanExtensionManager.hpp
+    ${SRC_DIR}/ANTUTU/Render/Vulkan/VulkanExtensionManager.cpp
+
     # header only
-    ${INC_DIR}/ANTUTU/Render/IVulkanPlatform.hpp
-    ${INC_DIR}/ANTUTU/Render/VulkanCommon.hpp
+    ${INC_DIR}/ANTUTU/Render/Vulkan/VulkanCommon.hpp
 )
 
 set(SYSTEM_SRC

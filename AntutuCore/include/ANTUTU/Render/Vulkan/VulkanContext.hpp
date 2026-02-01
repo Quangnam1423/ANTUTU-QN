@@ -20,8 +20,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef ANTUTU_VULKAN_CONTEXT_HPP
 #define ANTUTU_VULKAN_CONTEXT_HPP
 
-#include "ANTUTU/Config.hpp"
-#include "ANTUTU/Render/VulkanCommon.hpp"
+#include "VulkanCommon.hpp"
+#include "VulkanExtensionManager.hpp"
+#include "VulkanSurface.hpp"
 
 // Standard Library Includes
 #include <string>
@@ -37,24 +38,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <vector>
 #include <map>
 #include <set>
-
-#if defined(ANTUTU_SYSTEM_WINDOWS)
-    #define VK_USE_PLATFORM_WIN32_KHR       // for Windows.
-    #include <windows.h>                    // for HWND get from windows or surface.
-#elif defined(ANTUTU_SYSTEM_LINUX)
-    #define VK_USE_PLATFORM_XLIB_KHR        // for Display*, windows using Xlib ubuntu.
-    #include <X11/Xlib.h>
-#endif
-
-const std::vector<char const*> validationLayers = {
-    "VK_LAYER_KHRONOS_validation"
-};
-
-#ifdef NDEBUG
-    const bool enableValidationLayers = false;
-#else
-    const bool enableValidationLayers = true; 
-#endif
 
 // Forward declaration of GLFWwindow
 struct GLFWwindow; 
@@ -92,7 +75,7 @@ namespace att
     struct ANTUTU_API VulkanInstanceDescriptor
     {
         const char* applicationName;
-        uint32_t applicationVersion;
+        uint32_t applicationVersion ;
 
         const char* engineName;
         uint32_t engineVersion;
