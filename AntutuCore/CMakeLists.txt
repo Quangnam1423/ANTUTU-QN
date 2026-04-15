@@ -1,52 +1,39 @@
 set(INC_DIR include)
 set(SRC_DIR src)
 
-set(COMMON_SRC
-    ${INC_DIR}/ANTUTU/Common/NormalMutex.hpp
-    ${SRC_DIR}/ANTUTU/Common/NormalMutex.cpp
-)
-
 set(RENDER_SRC
-    #source and cpp files for classes.
-    ${INC_DIR}/ANTUTU/Render/Vulkan/VulkanContext.hpp
-    ${SRC_DIR}/ANTUTU/Render/Vulkan/VulkanContext.cpp
-
-    ${INC_DIR}/ANTUTU/Render/Vulkan/VulkanSurface.hpp
-    ${SRC_DIR}/ANTUTU/Render/Vulkan/VulkanSurface.cpp
-
-    #interfaces
-    ${INC_DIR}/ANTUTU/Render/Vulkan/IVulkanPlatform.hpp
-
-    
-    #platform class  implementations
-    ${INC_DIR}/ANTUTU/Render/Vulkan/GLFWVulkanPlatform.hpp
-    ${SRC_DIR}/ANTUTU/Render/Vulkan/GLFWVulkanPlatform.cpp
-
-    ${INC_DIR}/ANTUTU/Render/Vulkan/VulkanExtensionManager.hpp
-    ${SRC_DIR}/ANTUTU/Render/Vulkan/VulkanExtensionManager.cpp
-)
-
-set(SYSTEM_SRC
-    ${INC_DIR}/ANTUTU/System/Logger.hpp
-    ${SRC_DIR}/ANTUTU/System/Logger.cpp
+    # interfaces
+    ${INC_DIR}/ANTUTU/Render/IRender.hpp
 )
 
 set(ROOT_SRC
     # header only
     ${INC_DIR}/ANTUTU/VulkanCommon.hpp
     ${INC_DIR}/ANTUTU/Config.hpp
-
-    ${SRC_DIR}/ANTUTU/Engine.cpp
-    ${INC_DIR}/ANTUTU/Engine.hpp
 )
 
 set(RHI_SRC
+    #interfaces
+    ${INC_DIR}/ANTUTU/RHI/ISurfaceProvider.hpp
+
+    #headers only
+    ${INC_DIR}/ANTUTU/RHI/InstanceDescriptor.hpp
+    ${INC_DIR}/ANTUTU/RHI/WindowHandle.h
+
+    ${INC_DIR}/ANTUTU/RHI/VulkanInstance.hpp
+    ${SRC_DIR}/ANTUTU/RHI/VulkanInstance.cpp
+
     ${INC_DIR}/ANTUTU/RHI/VulkanContext.hpp
     ${SRC_DIR}/ANTUTU/RHI/VulkanContext.cpp
+
+    ${INC_DIR}/ANTUTU/RHI/VulkanSurface.hpp
+    ${SRC_DIR}/ANTUTU/RHI/VulkanSurface.cpp
+
+    ${INC_DIR}/ANTUTU/RHI/VulkanRender.hpp
+    ${SRC_DIR}/ANTUTU/RHI/VulkanRender.cpp
 )
 
 set(ALL_CORE_SOURCES
-    ${COMMON_SRC}
     ${SYSTEM_SRC}
     ${RENDER_SRC}
     ${ROOT_SRC}

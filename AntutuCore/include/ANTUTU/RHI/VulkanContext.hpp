@@ -3,12 +3,13 @@
 
 #include <ANTUTU/VulkanCommon.hpp>
 
-namespace att
-{
-    namespace RHI
-    {
+#include <vector>
+#include <string>
+#include <cstring>
 
-    };
+
+namespace att::RHI
+{
 };
 
 #endif // ANTUTU_RHI_VULKAN_CONTEXT_HPP
