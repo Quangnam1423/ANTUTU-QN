@@ -24,9 +24,6 @@ set(RENDER_SRC
 
     ${INC_DIR}/ANTUTU/Render/Vulkan/VulkanExtensionManager.hpp
     ${SRC_DIR}/ANTUTU/Render/Vulkan/VulkanExtensionManager.cpp
-
-    # header only
-    ${INC_DIR}/ANTUTU/Render/Vulkan/VulkanCommon.hpp
 )
 
 set(SYSTEM_SRC
@@ -35,9 +32,17 @@ set(SYSTEM_SRC
 )
 
 set(ROOT_SRC
+    # header only
+    ${INC_DIR}/ANTUTU/VulkanCommon.hpp
     ${INC_DIR}/ANTUTU/Config.hpp
+
     ${SRC_DIR}/ANTUTU/Engine.cpp
     ${INC_DIR}/ANTUTU/Engine.hpp
+)
+
+set(RHI_SRC
+    ${INC_DIR}/ANTUTU/RHI/VulkanContext.hpp
+    ${SRC_DIR}/ANTUTU/RHI/VulkanContext.cpp
 )
 
 set(ALL_CORE_SOURCES
@@ -45,6 +50,7 @@ set(ALL_CORE_SOURCES
     ${SYSTEM_SRC}
     ${RENDER_SRC}
     ${ROOT_SRC}
+    ${RHI_SRC}
 )
 
 antutu_add_module(AntutuCore

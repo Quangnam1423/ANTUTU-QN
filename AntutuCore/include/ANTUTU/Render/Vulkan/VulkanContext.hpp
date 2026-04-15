@@ -20,9 +20,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef ANTUTU_VULKAN_CONTEXT_HPP
 #define ANTUTU_VULKAN_CONTEXT_HPP
 
-#include "VulkanCommon.hpp"
-#include "VulkanExtensionManager.hpp"
-#include "VulkanSurface.hpp"
+#include <ANTUTU/VulkanCommon.hpp>
+#include <ANTUTU/Render/Vulkan/VulkanExtensionManager.hpp>
+#include <ANTUTU/Render/Vulkan/VulkanSurface.hpp>
 
 // Standard Library Includes
 #include <string>

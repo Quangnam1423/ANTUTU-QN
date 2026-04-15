@@ -11,7 +11,9 @@ project(Antutu LANGUAGES C CXX)
 ################################################################################
 # Global settings                                                              #
 ################################################################################
-set(ANTUTU_CXX_STD cxx_std_17)
+set(ANTUTU_CXX_STD cxx_std_20)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ################################################################################
 # Output directories                                                          #

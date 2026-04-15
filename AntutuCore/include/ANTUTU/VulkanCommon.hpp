@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef VULKAN_COMMON_HPP
 #define VULKAN_COMMON_HPP
 
-#include "ANTUTU/Config.hpp"
+#include <ANTUTU/Config.hpp>
 
 
 
