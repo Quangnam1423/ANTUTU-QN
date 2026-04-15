@@ -67,6 +67,11 @@ namespace att::RHI
                 }
                 break;
         }
+        // handle extensions and layers as needed, 
+        // for now we will just create a basic instance with the required extensions 
+        // for surface creation.
+
+        return true;
     }
 
     bool VulkanRender::CreateSurface(const WindowHandle &handle)
@@ -74,13 +79,15 @@ namespace att::RHI
         VkResult err;
 
         switch (handle.systemType) {
-            case WindowSystemType::WINDOWS:
+            case WindowSystemType::WINDOWS: 
+            {
                 VkWin32SurfaceCreateInfoKHR createInfo{};
                 createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
                 createInfo.hwnd = static_cast<HWND>(handle.win32.hwnd);
                 createInfo.hinstance = static_cast<HINSTANCE>(handle.win32.hinstance);
                 err = vkCreateWin32SurfaceKHR(m_instance, &createInfo, nullptr, &m_surface);
                 break;
+            }
             case WindowSystemType::X11:
                 // Create X11 surface, for now we will focus on Windows and GLFW, 
                 // so we can leave this unimplemented.

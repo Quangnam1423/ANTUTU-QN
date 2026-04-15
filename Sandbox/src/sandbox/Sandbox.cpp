@@ -1,6 +1,5 @@
 #include "sandbox/Sandbox.hpp"
 #include <window/Window.hpp>
-#include <ANTUTU/System/Logger.hpp>
 
 // SandBox::SandBox()
 // {
