@@ -26,11 +26,16 @@ set(RHI_SRC
     ${INC_DIR}/ANTUTU/RHI/VulkanContext.hpp
     ${SRC_DIR}/ANTUTU/RHI/VulkanContext.cpp
 
-    ${INC_DIR}/ANTUTU/RHI/VulkanSurface.hpp
-    ${SRC_DIR}/ANTUTU/RHI/VulkanSurface.cpp
+    # ${INC_DIR}/ANTUTU/RHI/VulkanRender.hpp
+    # ${SRC_DIR}/ANTUTU/RHI/VulkanRender.cpp
+)
 
-    ${INC_DIR}/ANTUTU/RHI/VulkanRender.hpp
-    ${SRC_DIR}/ANTUTU/RHI/VulkanRender.cpp
+set(PLATFROM_INFO
+    ${INC_DIR}/ANTUTU/PlatformInfo/VulkanDeviceInfo.h
+    ${INC_DIR}/ANTUTU/PlatformInfo/VulkanInstanceConfig.h
+    ${INC_DIR}/ANTUTU/PlatformInfo/VulkanDebugConfig.h
+    ${INC_DIR}/ANTUTU/PlatformInfo/VulkanSurface.h
+    ${INC_DIR}/ANTUTU/PlatformInfo/VulkanSurfaceConfig.h
 )
 
 set(ALL_CORE_SOURCES
@@ -38,6 +43,7 @@ set(ALL_CORE_SOURCES
     ${RENDER_SRC}
     ${ROOT_SRC}
     ${RHI_SRC}
+    ${PLATFROM_INFO}
 )
 
 antutu_add_module(AntutuCore

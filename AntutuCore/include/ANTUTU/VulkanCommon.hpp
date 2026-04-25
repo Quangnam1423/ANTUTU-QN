@@ -36,7 +36,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     #endif
 
     #include <windows.h>                    // for HWND get from windows or surface.
-
+    #include <vulkan/vulkan.hpp>
     // include vulkan headers for windows platform.
     #if defined(__INTELLISENSE__) || !defined(USE_CPP20_MODULES)
         #include <vulkan/vulkan_raii.hpp>
@@ -56,14 +56,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #endif
 
-const std::vector<char const*> validationLayers = {
-    "VK_LAYER_KHRONOS_validation"
-};
+namespace att::Config
+{
+    const std::vector<char const*> validationLayers = {
+        "VK_LAYER_KHRONOS_validation"
+    };
 
-#ifdef NDEBUG
-    const bool enableValidationLayers = false;
-#else
-    const bool enableValidationLayers = true; 
-#endif
+    #ifdef NDEBUG
+        constexpr const bool enableValidationLayers = false;
+    #else
+        constexpr const bool enableValidationLayers = true;
+    #endif
+}
 
 #endif

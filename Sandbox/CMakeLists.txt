@@ -2,9 +2,19 @@ set(INC_DIR include)
 set(SRC_DIR src)
 
 set(WINDOW_MODULE
-    ${INC_DIR}/window/Window.hpp
-    ${SRC_DIR}/window/Window.cpp
+
 )
+
+set(OBJECT_MODULE
+    ${INC_DIR}/Object/Window.hpp
+    ${SRC_DIR}/Object/Window.cpp
+)
+
+set(SANDBOX_MANAGER_MODULE
+    ${INC_DIR}/SandboxManager/WindowManager.hpp
+    ${SRC_DIR}/SandboxManager/WindowManager.cpp
+)
+
 
 set(STATE_MODULE
     ${INC_DIR}/states/ISandBoxState.hpp
@@ -14,8 +24,7 @@ set(STATE_MODULE
 )
 
 set(SANDBOX_MODULE
-    ${INC_DIR}/sandbox/Sandbox.hpp
-    ${SRC_DIR}/sandbox/Sandbox.cpp
+
 )
 
 set(ROOT_SRC
@@ -24,6 +33,8 @@ set(ROOT_SRC
 
 set(ALL_SANDBOX_SRC
     ${WINDOW_MODULE}
+    ${SANDBOX_MANAGER_MODULE}
+    ${OBJECT_MODULE}
     ${SANDBOX_MODULE}
     ${ROOT_SRC}
 )

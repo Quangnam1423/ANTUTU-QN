@@ -55,6 +55,7 @@ function(antutu_add_module target_name)
             # antutu_copy_to_binaries(${target_name})
         endif()
     elseif(ARG_TYPE STREQUAL "STATIC")
+		message(STATUS "Source: ${ARG_SOURCES}")
         add_library(${target_name} STATIC ${ARG_SOURCES})
     elseif(ARG_TYPE STREQUAL "SHARED")
         add_library(${target_name} SHARED ${ARG_SOURCES})
@@ -372,6 +373,7 @@ option(ANTUTU_BUILD_TEST "Build unit tests" ON)
 ################################################################################
 
 add_subdirectory(AntutuCore)
+#add_subdirectory(PlatformInfo)
 #add_subdirectory(Tests)
 
 if(ANTUTU_BUILD_CSHARP_BINDING)

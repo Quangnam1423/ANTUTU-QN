@@ -1,18 +1,21 @@
-#ifndef ANTUTU_RHI_WINDOW_HANDLE_H
-#define ANTUTU_RHI_WINDOW_HANDLE_H
+#ifndef VULKAN_PLATFORM_INFO_VULKAN_SURFACE_CONFIG_HPP
+#define VULKAN_PLATFORM_INFO_VULKAN_SURFACE_CONFIG_HPP
 
-#include <ANTUTU/Config.hpp>
-#include <cstdint>
+#include <ANTUTU/VulkanCommon.hpp>
 
 namespace att::PlatformInfo
 {
+    struct ANTUTU_API VulkanSurfaceConfig
+    {
+        void* windowHandle = nullptr;
+    };
+
     enum class ANTUTU_API WindowSystemType
     {
-        GLFW,
-        //SDL, for now, we will focus on GLFW, but we can add more window systems in the future.
         WINDOWS,
         X11,
-        WAYLAND
+        WAYLAND,
+        GLFW
     };
 
     struct ANTUTU_API WindowHandle
@@ -28,5 +31,4 @@ namespace att::PlatformInfo
     };
 }
 
-
-#endif // ANTUTU_RHI_WINDOW_HANDLE_H
+#endif // VULKAN_PLATFORM_INFO_VULKAN_SURFACE_CONFIG_HPP
