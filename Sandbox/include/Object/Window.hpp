@@ -14,6 +14,7 @@
     #include <GLFW/glfw3native.h>
 #endif
 
+#include <vector>
 #include <string>
 #include <memory>
 
@@ -56,6 +57,7 @@ namespace Sandbox
         void Render();
         void PollEvents();
         bool ShouldClose() const;
+        std::vector<const char*> GetRequiredExtensions() const;
         GLFWwindow* GetGLFWWindow() const { return m_window; }
     private:
         void InitWindow();

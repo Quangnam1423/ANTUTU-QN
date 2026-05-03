@@ -18,16 +18,31 @@ namespace att::RHI
         appInfo.engineVersion = config.engineVer;
         appInfo.apiVersion = config.apiVer;
 
+        std::vector<const char*> extensions = config.exts;
+        if constexpr (att::Config::EnableValidationLayers)
+        {
+            if (std::find(extensions.begin(), extensions.end(), VK_EXT_DEBUG_UTILS_EXTENSION_NAME) == extensions.end()) 
+            {
+                extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+            }
+        }
+
         VkInstanceCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         createInfo.pApplicationInfo = &appInfo;
-        createInfo.enabledExtensionCount = static_cast<uint32_t>(config.exts.size());
-        createInfo.ppEnabledExtensionNames = config.exts.data();
+        createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+        createInfo.ppEnabledExtensionNames = extensions.data();
 
-        if (config.isEnableValidationLayers) 
+        // Enable validation layers if in debug mode
+        if constexpr (att::Config::EnableValidationLayers) 
         {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(config.layers.size());
-            createInfo.ppEnabledLayerNames = config.layers.data();
+            if (!checkValidationLayerSupport(att::Config::validationLayers))
+            {
+                throw std::runtime_error("Validation layers requested, but not available!");
+                return false;
+            }
+            createInfo.enabledLayerCount = static_cast<uint32_t>(att::Config::validationLayers.size());
+            createInfo.ppEnabledLayerNames = att::Config::validationLayers.data();
         } 
         else 
         {

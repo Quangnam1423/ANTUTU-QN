@@ -6,6 +6,8 @@ int main()
     Sandbox::Window window(800, 600, "Sandbox Antutu Window");
 
 
+
+
     // init vulkan instance with config
     att::RHI::VulkanInstance* vulkanInstance;
     att::PlatformInfo::VulkanInstanceConfig config{
@@ -14,9 +16,7 @@ int main()
         .engineName = "Antutu Engine",
         .engineVer = VK_MAKE_VERSION(1, 0, 0),
         .apiVer = VK_API_VERSION_1_3,
-        .exts = {},
-        .layers = {},
-        .isEnableValidationLayers = true
+        .exts = {window.GetRequiredExtensions()}
     };
 
     vulkanInstance = new att::RHI::VulkanInstance();    

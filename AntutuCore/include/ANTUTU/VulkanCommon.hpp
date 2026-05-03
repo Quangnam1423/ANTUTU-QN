@@ -56,17 +56,20 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #endif
 
+#ifdef NDEBUG
+    #define ANTUTU_ENABLE_VALIDATION_LAYERS false
+#else
+    #define ANTUTU_ENABLE_VALIDATION_LAYERS true
+#endif
+
 namespace att::Config
 {
     const std::vector<char const*> validationLayers = {
         "VK_LAYER_KHRONOS_validation"
     };
 
-    #ifdef NDEBUG
-        constexpr const bool enableValidationLayers = false;
-    #else
-        constexpr const bool enableValidationLayers = true;
-    #endif
+    inline constexpr bool EnableValidationLayers = 
+        ANTUTU_ENABLE_VALIDATION_LAYERS == 1;
 }
 
 #endif

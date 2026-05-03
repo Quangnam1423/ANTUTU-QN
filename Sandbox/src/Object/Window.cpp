@@ -22,6 +22,13 @@ namespace Sandbox
         }
     }
 
+    std::vector<const char*> Window::GetRequiredExtensions() const
+    {
+        uint32_t glfwExtensionCount = 0;
+        const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+        return std::vector<const char*>(glfwExtensions, glfwExtensions + glfwExtensionCount);
+    }
+
     void Window::InitWindow()
     {
         m_config.windowSize = { m_config.width, m_config.height };

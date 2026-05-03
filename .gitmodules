@@ -16,3 +16,6 @@
 [submodule "VulkanEngine/ThirdParty/spdlog"]
 	path = VulkanEngine/ThirdParty/spdlog
 	url = https://github.com/g-truc/spdlog.git
+[submodule "ThirdParty/third_party/spdlog"]
+	path = ThirdParty/third_party/spdlog
+	url = https://github.com/gabime/spdlog.git

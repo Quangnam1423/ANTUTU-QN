@@ -13,8 +13,6 @@ namespace att::PlatformInfo
         uint32_t engineVer;
         uint32_t apiVer;
         std::vector<const char*> exts;
-        std::vector<const char*> layers;
-        bool isEnableValidationLayers = enableValidationLayers;
     };
 }
 
