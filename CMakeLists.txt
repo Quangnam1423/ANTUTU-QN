@@ -381,6 +381,7 @@ option(ANTUTU_BUILD_TEST "Build unit tests" ON)
 ################################################################################
 
 add_subdirectory(AntutuCore)
+add_subdirectory(Common)
 #add_subdirectory(PlatformInfo)
 #add_subdirectory(Tests)
 

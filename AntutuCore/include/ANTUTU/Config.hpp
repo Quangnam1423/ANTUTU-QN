@@ -34,7 +34,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #elif defined(__ANDROID__)
     #define ANTUTU_SYSTEM_ANDROID
-    // Android cũng là Linux-based, nhưng ta tách riêng để dễ xử lý
 
 #elif defined(__linux__)
     #define ANTUTU_SYSTEM_LINUX

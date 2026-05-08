@@ -34,6 +34,7 @@ namespace att::RHI
         createInfo.ppEnabledExtensionNames = extensions.data();
 
         // Enable validation layers if in debug mode
+		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
         if constexpr (att::Config::EnableValidationLayers) 
         {
             if (!checkValidationLayerSupport(att::Config::validationLayers))

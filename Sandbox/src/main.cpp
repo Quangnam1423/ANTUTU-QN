@@ -1,12 +1,11 @@
 #include <ANTUTU/RHI/VulkanInstance.hpp>
 #include <Object/Window.hpp>
 
+
+
 int main()
 {
     Sandbox::Window window(800, 600, "Sandbox Antutu Window");
-
-
-
 
     // init vulkan instance with config
     att::RHI::VulkanInstance* vulkanInstance;
@@ -30,7 +29,6 @@ int main()
     }
 
     window.Render();
-
 
     // close app
     delete vulkanInstance;
