@@ -22,6 +22,7 @@ CTestTestfile.cmake
 # --- Visual Studio / CLion / VSCode IDE cache ---
 .idea/
 .vscode/
+.vs/
 *.sln
 *.vcxproj*
 *.code-workspace
