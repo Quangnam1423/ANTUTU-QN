@@ -17,8 +17,9 @@
 	#error This operating system is not supported by Antutu Engine
 #endif
 
+
 #if (defined(_MSVC_LANG) && _MSVC_LANG < 201703L) || (!defined(_MSVC_LANG) && __cplusplus < 201703L)
-	#error "Common requires C++17 or newer."
+
 #endif
 
 ////////////////////////////////////////////////////////////

@@ -1,8 +1,22 @@
 set (INC_DIR include)
 set (SRC_DIR src)
 
+set (BASE_MODULE
+    ${INC_DIR}/Common/Base/ShareContextBase.h
+    ${INC_DIR}/Common/Base/ShareContainer.h
+    ${INC_DIR}/Common/Base/AnString.h
+    ${SRC_DIR}/Base/AnString.cpp
+)
+
+set (LOGGER_MODULE
+    ${INC_DIR}/Common/Logger/LogMessage.h
+    ${SRC_DIR}/Logger/LogMessage.cpp
+)
+
 set(ALL_CORE_SOURCES
     ${INC_DIR}/Common/Config.h
+    ${LOGGER_MODULE}
+    ${BASE_MODULE}
 )
 
 antutu_add_module(AntutuCommon
