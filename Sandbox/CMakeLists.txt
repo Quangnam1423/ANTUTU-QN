@@ -44,6 +44,7 @@ antutu_add_module(Sandbox
     SOURCES
         ${ALL_SANDBOX_SRC}
     LINK_LIBS
+        AntutuCommon
         AntutuCore
         Vulkan::Vulkan
         glfw

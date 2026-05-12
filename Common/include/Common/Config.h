@@ -45,7 +45,7 @@
 ////////////////////////////////////////////////////////////
 
 // if build static library, then we do nothing here
-#if defined(COMMON_STATIC)
+#if defined(ANTUTUCOMMON_STATIC)
 	#define COMMON_API
 #else
 		// if windows system

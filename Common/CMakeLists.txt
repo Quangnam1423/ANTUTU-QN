@@ -9,21 +9,31 @@ set (BASE_MODULE
 )
 
 set (LOGGER_MODULE
-    ${INC_DIR}/Common/Logger/LogMessage.h
-    ${SRC_DIR}/Logger/LogMessage.cpp
+    ${INC_DIR}/Common/Logger/ObserverSink.h
+
+    ${INC_DIR}/Common/Logger/GUIConsole.h
+    ${SRC_DIR}/Logger/GUIConsole.cpp
+
+    ${INC_DIR}/Common/Logger/LogManager.h
+    ${SRC_DIR}/Logger/LogManager.cpp
+)
+
+set(DTO
+    ${INC_DIR}/Common/DTO/LogMessage.h
 )
 
 set(ALL_CORE_SOURCES
     ${INC_DIR}/Common/Config.h
     ${LOGGER_MODULE}
     ${BASE_MODULE}
+    ${DTO}
 )
 
 antutu_add_module(AntutuCommon
-    TYPE STATIC
+    TYPE SHARED
     SOURCES
         ${ALL_CORE_SOURCES}
-    LINK_LIBS
+    PUBLIC_LIBS
         spdlog
 )
 

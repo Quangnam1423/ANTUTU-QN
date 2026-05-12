@@ -1,5 +1,7 @@
 #include <ANTUTU/RHI/VulkanInstance.hpp>
 #include <Object/Window.hpp>
+#include <Common/Logger/LogManager.h>
+#include <Common/Logger/GUIConsole.h>
 
 
 
@@ -18,6 +20,10 @@ int main()
         .exts = {window.GetRequiredExtensions()}
     };
 
+    Common::LogManager::Get().Init();
+    auto editorUILog = std::make_shared<Common::GUIConsole>();
+    Common::LogManager::Get().AddObserver(editorUILog);
+
     vulkanInstance = new att::RHI::VulkanInstance();    
     if (!vulkanInstance->Initialize(config)) {
         std::cerr << "Failed to initialize Vulkan instance!" << std::endl;
@@ -25,7 +31,8 @@ int main()
     }
     else 
     {
-        std::cout << "Vulkan instance initialized successfully!" << std::endl;
+        //std::cout << "Vulkan instance initialized successfully!" << std::endl;
+        Common::LOG_INFO("Vulkan instance initialized successfully!\n");
     }
 
     window.Render();

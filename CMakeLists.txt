@@ -42,7 +42,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)         # Executable
 function(antutu_add_module target_name)
     set(options)
     set(oneValueArgs TYPE)
-    set(multiValueArgs SOURCES LINK_LIBS)
+    set(multiValueArgs SOURCES LINK_LIBS PUBLIC_LIBS PRIVATE_LIBS)
 
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -57,6 +57,8 @@ function(antutu_add_module target_name)
     elseif(ARG_TYPE STREQUAL "STATIC")
 		message(STATUS "Source: ${ARG_SOURCES}")
         add_library(${target_name} STATIC ${ARG_SOURCES})
+		string(TOUPPER ${target_name} NAME_UPPER)
+        target_compile_definitions(${target_name} PUBLIC ${NAME_UPPER}_STATIC)
     elseif(ARG_TYPE STREQUAL "SHARED")
         add_library(${target_name} SHARED ${ARG_SOURCES})
         string(TOUPPER ${target_name} NAME_UPPER)
@@ -65,6 +67,14 @@ function(antutu_add_module target_name)
 
     else()
         message(FATAL_ERROR "antutu_add_module: Unknown TYPE '${ARG_TYPE}' for target '${target_name}'. Use EXE, STATIC, or SHARED.")
+    endif()
+
+	if(ARG_PUBLIC_LIBS)
+        target_link_libraries(${target_name} PUBLIC ${ARG_PUBLIC_LIBS})
+    endif()
+
+    if(ARG_PRIVATE_LIBS)
+        target_link_libraries(${target_name} PRIVATE ${ARG_PRIVATE_LIBS})
     endif()
 
     if(ARG_LINK_LIBS)
@@ -330,14 +340,15 @@ endif()
 ################################################################################
 
 add_subdirectory(ThirdParty)
-include(FetchContent)
-FetchContent_Declare(
-    spdlog
-    GIT_REPOSITORY https://github.com/gabime/spdlog.git
-    GIT_TAG v1.13.0
-)
 
-FetchContent_MakeAvailable(spdlog)
+#include(FetchContent)
+#FetchContent_Declare(
+#    spdlog
+#    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+#    GIT_TAG v1.13.0
+#)
+
+#FetchContent_MakeAvailable(spdlog)
 
 if(WIN32)
     if(DEFINED ENV{VULKAN_SDK})
