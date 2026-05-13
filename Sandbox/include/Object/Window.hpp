@@ -18,7 +18,7 @@
 #include <string>
 #include <memory>
 
-namespace Sandbox
+namespace SB
 {
     struct WindowPosition {
         int x;

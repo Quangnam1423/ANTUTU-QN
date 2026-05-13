@@ -10,7 +10,7 @@ namespace Common
         m_observerSink = std::make_shared<Common::ObserverSink_mt>();
         m_observerSink->set_pattern("[%T] [%l] %v");
 
-		std::vector<spdlog::sink_ptr> sinks{ m_observerSink };
+		std::vector<spdlog::sink_ptr> sinks{console_sink, m_observerSink };
 
 		spdlog::init_thread_pool(8192, 1);
 

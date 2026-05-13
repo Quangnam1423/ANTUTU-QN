@@ -3,22 +3,16 @@
 
 #include <Common/Config.h>
 #include <Common/DTO/LogMessage.h>
+#include <Common/Logger/ILogObserver.h>
 #include <spdlog/sinks/base_sink.h>
 #include <spdlog/details/null_mutex.h>
 #include <vector>
 #include <mutex>
 #include <algorithm>
+#include <iostream>
 
 namespace Common
 {
-	class COMMON_API ILogObserver
-	{
-	public:
-		virtual ~ILogObserver() = default;
-		virtual void OnLogReceived(const std::string& msg) = 0;
-	};
-
-
 	template<typename Mutex>
 	class ObserverSink : public spdlog::sinks::base_sink<Mutex>
 	{

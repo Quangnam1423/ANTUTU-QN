@@ -1,7 +1,7 @@
 #include <Object/Window.hpp>
 #include <stdexcept>
 
-namespace Sandbox
+namespace SB
 {
     Window::Window(int width, int height, const std::string& title)
         : m_config{width, height, title}, m_window(nullptr)

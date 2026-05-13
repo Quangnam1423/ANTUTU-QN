@@ -1,7 +1,7 @@
 #ifndef CONSOLE_SINK_H
 #define CONSOLE_SINK_H
 
-#include <Common/Logger/ObserverSink.h>
+#include <Common/Logger/ILogObserver.h>
 
 namespace Common
 {

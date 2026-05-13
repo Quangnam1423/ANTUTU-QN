@@ -26,6 +26,7 @@ enum class SandBoxStateType
 /// @brief Interface for sandbox states.
 class ISandBoxState
 {
+public:
     virtual ~ISandBoxState() = default;
     virtual void Init() = 0;
     virtual void Cleanup() = 0;

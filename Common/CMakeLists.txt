@@ -10,9 +10,13 @@ set (BASE_MODULE
 
 set (LOGGER_MODULE
     ${INC_DIR}/Common/Logger/ObserverSink.h
+    ${INC_DIR}/Common/Logger/ILogObserver.h
 
     ${INC_DIR}/Common/Logger/GUIConsole.h
     ${SRC_DIR}/Logger/GUIConsole.cpp
+
+    ${INC_DIR}/Common/Logger/FileLogObserver.h
+    ${SRC_DIR}/Logger/FileLogObserver.cpp
 
     ${INC_DIR}/Common/Logger/LogManager.h
     ${SRC_DIR}/Logger/LogManager.cpp

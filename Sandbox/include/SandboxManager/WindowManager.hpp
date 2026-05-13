@@ -1,7 +1,7 @@
 #ifndef SANDBOX_WINDOW_MANAGER_HPP
 #define SANDBOX_WINDOW_MANAGER_HPP
 
-namespace Sandbox
+namespace SB
 {
     class WindowManager
     {

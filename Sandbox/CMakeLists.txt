@@ -17,10 +17,10 @@ set(SANDBOX_MANAGER_MODULE
 
 
 set(STATE_MODULE
-    ${INC_DIR}/states/ISandBoxState.hpp
+    ${INC_DIR}/State/ISandBoxState.hpp
 
-    ${INC_DIR}/states/SandBoxState.hpp
-    ${INC_DIR}/states/IntroduceState.hpp
+    ${INC_DIR}/State/SandBoxState.hpp
+    ${INC_DIR}/State/IntroduceState.hpp
 )
 
 set(SANDBOX_MODULE
@@ -28,6 +28,8 @@ set(SANDBOX_MODULE
 )
 
 set(ROOT_SRC
+    ${INC_DIR}/Sandbox.hpp
+    ${SRC_DIR}/Sandbox.cpp
     ${SRC_DIR}/main.cpp
 )
 
