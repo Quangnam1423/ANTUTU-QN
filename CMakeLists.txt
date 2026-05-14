@@ -403,6 +403,7 @@ if(ANTUTU_BUILD_CSHARP_BINDING)
 endif()
 
 if(ANTUTU_BUILD_SANDBOX AND NOT ANDROID)
+	add_subdirectory(GLFWPlatform)
     add_subdirectory(Sandbox)
 endif()
 

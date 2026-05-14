@@ -52,11 +52,10 @@ antutu_add_module(AntutuCore
     TYPE SHARED
     SOURCES
         ${ALL_CORE_SOURCES}
-    LINK_LIBS
+    LINK_LIBS 
         AntutuCommon
         Vulkan::Vulkan
         glm
-        glfw
 )
 
 target_compile_definitions(AntutuCore PRIVATE ANTUTU_CORE_EXPORT)
