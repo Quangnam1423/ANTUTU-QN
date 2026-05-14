@@ -42,6 +42,7 @@ namespace SB
 			};
 
 			m_vulkanInstance = new att::RHI::VulkanInstance();
+
 			if (!m_vulkanInstance->Initialize(config)) {
 				std::cerr << "Failed to initialize Vulkan instance!" << std::endl;
 				LOG_ERROR("Failed to initialize Vulkan instance!");

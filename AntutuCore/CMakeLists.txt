@@ -51,6 +51,7 @@ antutu_add_module(AntutuCore
     SOURCES
         ${ALL_CORE_SOURCES}
     LINK_LIBS
+        AntutuCommon
         Vulkan::Vulkan
         glm
         glfw

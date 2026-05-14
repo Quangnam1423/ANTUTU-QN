@@ -44,6 +44,9 @@ namespace att::RHI
             }
             createInfo.enabledLayerCount = static_cast<uint32_t>(att::Config::validationLayers.size());
             createInfo.ppEnabledLayerNames = att::Config::validationLayers.data();
+
+			PopulateDebugMessengerCreateInfo(debugCreateInfo);
+			createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
         } 
         else 
         {
@@ -55,6 +58,16 @@ namespace att::RHI
         {
             throw std::runtime_error("Failed to create Vulkan instance");
             return false;
+        }
+
+		// create debug messenger if validation layers are enabled
+        if constexpr (att::Config::EnableValidationLayers)
+        {
+            if (CreateDebugUtilsMessengerEXT(&debugCreateInfo, nullptr, &m_debugMessenger) != VK_SUCCESS) 
+            {
+                throw std::runtime_error("Failed to set up debug messenger!");
+                return false;
+			}
         }
         return true;
     }
@@ -94,12 +107,42 @@ namespace att::RHI
         return true;
     }
 
-
-    // Set up the debug messenger if validation layers are enabled
-    // This is where you would fill in VkDebugUtilsMessengerCreateInfoEXT
-    // and call vkCreateDebugUtilsMessengerEXT
-    void VulkanInstance::setupDebugMessenger()
+    void VulkanInstance::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
     {
+        createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 
+        createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+                                     VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+                                     VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+
+        createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                                 VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+                                 VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+
+        createInfo.pfnUserCallback = DebugCallback;
+
+        createInfo.pUserData = nullptr;
+	}
+
+    VkResult VulkanInstance::CreateDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCreateInfoEXT* createInfo,
+        const VkAllocationCallbacks* allocator,
+        VkDebugUtilsMessengerEXT* debugMessenger)
+    {
+        auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkCreateDebugUtilsMessengerEXT");
+        if (func != nullptr) {
+            return func(m_instance, createInfo, allocator, debugMessenger);
+        }
+        else {
+            return VK_ERROR_EXTENSION_NOT_PRESENT;
+        }
+    }
+
+    void VulkanInstance::DestroyDebugUtilsMessengerEXT(VkDebugUtilsMessengerEXT debugMessenger,
+        const VkAllocationCallbacks* allocator)
+    {
+        auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkDestroyDebugUtilsMessengerEXT");
+        if (func != nullptr) {
+            func(m_instance, debugMessenger, allocator);
+        }
     }
 };
