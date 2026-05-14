@@ -15,6 +15,7 @@
 #define ANTUTU_RHI_ISURFACE_PROVIDER_HPP
 
 #include <ANTUTU/VulkanCommon.hpp>
+#include <vector>
 
 namespace att::RHI
 {
@@ -22,7 +23,10 @@ namespace att::RHI
     {
     public:
         virtual ~ISurfaceProvider() = default;
-        virtual VkSurfaceKHR* CreateSurface(VkInstance instance) = 0;
+
+        virtual VkSurfaceKHR* CreateSurface(VkInstance instance) const = 0;
+
+		virtual std::vector<const char*> GetRequiredExtensions() const = 0;
     };
 }
 

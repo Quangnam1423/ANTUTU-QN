@@ -4,28 +4,24 @@
 #include <Common/Logger/GUIConsole.h>
 #include <Sandbox.hpp>
 
+#if defined(_WIN32) && defined(_MSC_VER)
+    #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
 
 int main()
 {
-    //SB::Window window(800, 600, "Sandbox Antutu Window");
+    SB::Sandbox* app = new SB::Sandbox();
 
-    //// init vulkan instance with config
+	app->Initialize();
 
+	app->Run();
 
-    //Common::LogManager::Get().Init();
-    //auto editorUILog = std::make_shared<Common::GUIConsole>();
-    //Common::LogManager::Get().AddObserver(editorUILog);
+    if (1)
+    {
+        app->Shutdown();
+    }
 
+    delete app;
 
-
-    //window.Render();
-
-    // close app
-
-    SB::Sandbox app;
-	app.Initialize();
-	app.Run();
-    app.Shutdown();
-    
     return EXIT_SUCCESS;
 }

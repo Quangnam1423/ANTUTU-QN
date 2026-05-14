@@ -5,7 +5,6 @@ namespace att::RHI
     VulkanInstance::~VulkanInstance()
     {
         Destroy();
-        std::cout << "Vulkan instance destroyed." << std::endl;
     }
 
     bool VulkanInstance::Initialize(const PlatformInfo::VulkanInstanceConfig& config)
@@ -65,7 +64,9 @@ namespace att::RHI
         {
             if (CreateDebugUtilsMessengerEXT(&debugCreateInfo, nullptr, &m_debugMessenger) != VK_SUCCESS) 
             {
-                throw std::runtime_error("Failed to set up debug messenger!");
+				LOG_ERROR("Failed to set up Vulkan debug messenger.");
+                //throw std::runtime_error("Failed to set up debug messenger!");
+				std::terminate();
                 return false;
 			}
         }
@@ -76,8 +77,15 @@ namespace att::RHI
     {
         if (m_instance != VK_NULL_HANDLE) 
         {
+            if (m_debugMessenger != VK_NULL_HANDLE) 
+             {
+                DestroyDebugUtilsMessengerEXT(m_debugMessenger, nullptr);
+                m_debugMessenger = VK_NULL_HANDLE;
+			}
+
             vkDestroyInstance(m_instance, nullptr);
             m_instance = VK_NULL_HANDLE;
+			LOG_INFO("Vulkan instance destroyed.");
         }
     }
 
@@ -101,14 +109,17 @@ namespace att::RHI
             }
             if (!layerFound) 
             {
+				LOG_ERROR("Validation layer not found: {0}", layerName);
                 return false;
             }
         }
+		LOG_INFO("All requested validation layers are supported.");
         return true;
     }
 
     void VulkanInstance::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
     {
+		LOG_CRITICAL("Setting up Vulkan debug messenger...");
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 
         createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
@@ -130,9 +141,11 @@ namespace att::RHI
     {
         auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkCreateDebugUtilsMessengerEXT");
         if (func != nullptr) {
+			LOG_CRITICAL("Creating Vulkan debug messenger...");
             return func(m_instance, createInfo, allocator, debugMessenger);
         }
         else {
+            LOG_ERROR("Failed to create Vulkan debug messenger.");
             return VK_ERROR_EXTENSION_NOT_PRESENT;
         }
     }
@@ -143,6 +156,7 @@ namespace att::RHI
         auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkDestroyDebugUtilsMessengerEXT");
         if (func != nullptr) {
             func(m_instance, debugMessenger, allocator);
+			LOG_INFO("Vulkan debug messenger destroyed.");
         }
     }
 };

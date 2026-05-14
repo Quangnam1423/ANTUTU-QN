@@ -43,7 +43,6 @@ namespace SB
             glfwTerminate();
             throw std::runtime_error("Failed to create GLFW window!");
         }
-        glfwMakeContextCurrent(m_window);
         glfwGetWindowSize(m_window, &m_config.windowSize.x, &m_config.windowSize.y);
         glfwGetWindowPos(m_window, (int*)&m_config.windowPosition.x, (int*)&m_config.windowPosition.y);
 

@@ -40,7 +40,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)         # Executable
 
 # Function to add a module (executable or library) with specified sources and link libraries
 function(antutu_add_module target_name)
-    set(options)
+    set(options GUI)
     set(oneValueArgs TYPE)
     set(multiValueArgs SOURCES LINK_LIBS PUBLIC_LIBS PRIVATE_LIBS)
 
@@ -50,9 +50,11 @@ function(antutu_add_module target_name)
         if(ANDROID)
             add_library(${target_name} SHARED ${ARG_SOURCES})
         else()
-            add_executable(${target_name} ${ARG_SOURCES})
-            # set_target_properties(${target_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/binary)     
-            # antutu_copy_to_binaries(${target_name})
+			if(ARG_GUI)
+				add_executable(${target_name} WIN32 ${ARG_SOURCES})
+			else()
+				add_executable(${target_name} ${ARG_SOURCES})
+			endif()
         endif()
     elseif(ARG_TYPE STREQUAL "STATIC")
 		message(STATUS "Source: ${ARG_SOURCES}")

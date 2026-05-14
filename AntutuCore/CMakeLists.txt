@@ -15,6 +15,8 @@ set(ROOT_SRC
 set(RHI_SRC
     #interfaces
     ${INC_DIR}/ANTUTU/RHI/ISurfaceProvider.hpp
+    ${INC_DIR}/ANTUTU/RHI/IWindow.hpp
+    ${INC_DIR}/ANTUTU/RHI/VulkanSurface.hpp
 
     #headers only
     ${INC_DIR}/ANTUTU/RHI/InstanceDescriptor.hpp
